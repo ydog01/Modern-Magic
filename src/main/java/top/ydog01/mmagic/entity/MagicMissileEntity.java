@@ -49,6 +49,7 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
     private int searchCooldown = 0;
     private int bounces = 0;
     private int pierces = 0;
+    private long expireAt = -1;
     private final java.util.Set<Integer> hitEntities = new java.util.HashSet<>();
 
     public MagicMissileEntity(EntityType<? extends ThrowableItemProjectile> type, Level level) {
@@ -116,6 +117,14 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         if (level().isClientSide()) {
             return;
         }
+        long gameTime = level().getGameTime();
+        if (this.expireAt < 0) {
+            this.expireAt = gameTime + Math.max(1, this.delayed ? this.flightTicks : this.maxTicks - this.tickCount);
+        }
+        if (gameTime >= this.expireAt) {
+            this.discard();
+            return;
+        }
         if ((this.mods & SpellModifiers.HOMING) != 0) {
             steerTowardTarget();
         }
@@ -125,9 +134,6 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
                 continueSpell(this.position(), this.getDeltaMovement());
                 this.discard();
             }
-        } else if (this.tickCount >= this.maxTicks) {
-
-            this.discard();
         }
     }
 
@@ -311,6 +317,7 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         tag.putInt("maxTicks", this.maxTicks);
         tag.putInt("bounces", this.bounces);
         tag.putInt("pierces", this.pierces);
+        tag.putLong("expireAt", this.expireAt);
         if (ownerId != null) {
             tag.putUUID("ownerId", ownerId);
         }
@@ -345,6 +352,7 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         this.maxTicks = tag.getInt("maxTicks");
         this.bounces = tag.contains("bounces") ? tag.getInt("bounces") : 0;
         this.pierces = tag.contains("pierces") ? tag.getInt("pierces") : 0;
+        this.expireAt = tag.contains("expireAt") ? tag.getLong("expireAt") : -1;
         if (tag.hasUUID("ownerId")) {
             this.ownerId = tag.getUUID("ownerId");
         }

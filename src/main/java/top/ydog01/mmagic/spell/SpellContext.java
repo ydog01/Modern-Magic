@@ -67,6 +67,9 @@ public final class SpellContext {
         if (SpellRunner.hasActiveSpell(wandId)) {
             return SpellRunner.consumeActiveMana(caster, wandId, cost);
         }
+        if (SpellRunner.findWandById(caster, wandId).isEmpty()) {
+            return false;
+        }
         if (!WandData.consumeMana(wand, cost, level)) {
             return false;
         }
