@@ -1,0 +1,37 @@
+{
+  "parent": "modern_magic:root",
+  "display": {
+    "icon": {
+      "id": "modern_magic:magic_crystal"
+    },
+    "title": {
+      "translate": "advancements.modern_magic.crystal_master.title"
+    },
+    "description": {
+      "translate": "advancements.modern_magic.crystal_master.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got_crystal": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "modern_magic:magic_crystal"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "got_crystal"
+    ]
+  ]
+}

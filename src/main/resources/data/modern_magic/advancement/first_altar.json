@@ -1,0 +1,37 @@
+{
+  "parent": "modern_magic:root",
+  "display": {
+    "icon": {
+      "id": "modern_magic:altar"
+    },
+    "title": {
+      "translate": "advancements.modern_magic.first_altar.title"
+    },
+    "description": {
+      "translate": "advancements.modern_magic.first_altar.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got_altar": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "modern_magic:altar"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "got_altar"
+    ]
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "parent": "modern_magic:root",
+  "display": {
+    "icon": {
+      "id": "modern_magic:wand"
+    },
+    "title": {
+      "translate": "advancements.modern_magic.first_wand.title"
+    },
+    "description": {
+      "translate": "advancements.modern_magic.first_wand.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got_wand": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "modern_magic:wand"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "got_wand"
+    ]
+  ]
+}

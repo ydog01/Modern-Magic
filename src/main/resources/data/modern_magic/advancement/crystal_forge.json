@@ -1,0 +1,31 @@
+{
+  "parent": "modern_magic:root",
+  "display": {
+    "icon": {
+      "id": "modern_magic:magic_crystal"
+    },
+    "title": {
+      "translate": "advancements.modern_magic.crystal_forge.title"
+    },
+    "description": {
+      "translate": "advancements.modern_magic.crystal_forge.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "crafted_crystal": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "modern_magic:magic_crystal"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "crafted_crystal"
+    ]
+  ]
+}

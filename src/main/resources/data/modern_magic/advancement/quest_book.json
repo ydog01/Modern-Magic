@@ -1,0 +1,37 @@
+{
+  "parent": "modern_magic:root",
+  "display": {
+    "icon": {
+      "id": "modern_magic:quest_book"
+    },
+    "title": {
+      "translate": "advancements.modern_magic.quest_book.title"
+    },
+    "description": {
+      "translate": "advancements.modern_magic.quest_book.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got_book": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "modern_magic:quest_book"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "got_book"
+    ]
+  ]
+}

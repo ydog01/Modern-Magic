@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C ",
+    "CNC",
+    " C "
+  ],
+  "key": {
+    "C": {
+      "item": "modern_magic:magic_crystal"
+    },
+    "N": {
+      "item": "modern_magic:spell_node_echo"
+    }
+  },
+  "result": {
+    "id": "modern_magic:spell_node_echo",
+    "count": 2
+  }
+}

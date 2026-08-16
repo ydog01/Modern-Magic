@@ -1,0 +1,40 @@
+{
+  "parent": "modern_magic:root",
+  "display": {
+    "icon": {
+      "id": "modern_magic:magic_crystal"
+    },
+    "title": {
+      "translate": "advancements.modern_magic.duplicate.title"
+    },
+    "description": {
+      "translate": "advancements.modern_magic.duplicate.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "duplicated": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "#modern_magic:spell_nodes"
+            ],
+            "count": {
+              "min": 2
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "duplicated"
+    ]
+  ]
+}
