@@ -46,10 +46,9 @@ public final class SpellRunner {
     
     public static void continueFrom(ServerLevel level, UUID casterId, UUID wandId,
                                     List<SpellNode.Connection> connections,
-                                    Vec3 at, Vec3 vel, float damageMult, float speedMult,
-                                    SpellModifiers mods) {
+                                    Vec3 at, Vec3 vel, float damageMult, float speedMult) {
         if (manager == null) return;
-        manager.continueFrom(level, casterId, wandId, connections, at, vel, damageMult, speedMult, mods);
+        manager.continueFrom(level, casterId, wandId, connections, at, vel, damageMult, speedMult);
     }
     
     public static ItemStack findWand(LivingEntity living) {
@@ -60,26 +59,6 @@ public final class SpellRunner {
         ItemStack off = living.getOffhandItem();
         if (off.getItem() instanceof WandItem) {
             return off;
-        }
-        return ItemStack.EMPTY;
-    }
-    
-    public static ItemStack findWandById(LivingEntity living, UUID wandId) {
-        if (living.getMainHandItem().getItem() instanceof WandItem
-                && WandData.getWandId(living.getMainHandItem()).equals(wandId)) {
-            return living.getMainHandItem();
-        }
-        if (living.getOffhandItem().getItem() instanceof WandItem
-                && WandData.getWandId(living.getOffhandItem()).equals(wandId)) {
-            return living.getOffhandItem();
-        }
-        if (living instanceof Player player) {
-            for (ItemStack stack : player.getInventory().items) {
-                if (stack.getItem() instanceof WandItem 
-                        && WandData.getWandId(stack).equals(wandId)) {
-                    return stack;
-                }
-            }
         }
         return ItemStack.EMPTY;
     }

@@ -29,7 +29,6 @@ public final class SpellContext {
     private long lastUpdateTick = 0;
     private float damageMult = 1.0f;
     private float speedMult = 1.0f;
-    private SpellModifiers modifiers = new SpellModifiers();
     
     public SpellContext(ServerLevel level, LivingEntity caster, ItemStack wand) {
         this.level = level;
@@ -46,8 +45,7 @@ public final class SpellContext {
     private SpellContext(ServerLevel level, LivingEntity caster, ItemStack wand, SpellGraph graph,
                          Vec3 origin, Vec3 direction, UUID wandId, Vec3 currentPosition,
                          Vec3 currentVelocity, Set<UUID> removedNodes, boolean terminated,
-                         double manaPool, long lastUpdateTick, float damageMult, float speedMult,
-                         SpellModifiers modifiers) {
+                         double manaPool, long lastUpdateTick, float damageMult, float speedMult) {
         this.level = level;
         this.caster = caster;
         this.wand = wand;
@@ -63,13 +61,12 @@ public final class SpellContext {
         this.lastUpdateTick = lastUpdateTick;
         this.damageMult = damageMult;
         this.speedMult = speedMult;
-        this.modifiers = modifiers;
     }
     
     public SpellContext clone() {
         return new SpellContext(level, caster, wand, graph, origin, direction, wandId,
                 currentPosition, currentVelocity, removedNodes, terminated, manaPool, lastUpdateTick,
-                damageMult, speedMult, modifiers);
+                damageMult, speedMult);
     }
     
     public boolean consumeMana(int cost) {
@@ -108,9 +105,7 @@ public final class SpellContext {
     public void setDamageMult(float mult) { this.damageMult = mult; }
     public float getSpeedMult() { return speedMult; }
     public void setSpeedMult(float mult) { this.speedMult = mult; }
-    public SpellModifiers getModifiers() { return modifiers; }
-    public void setModifiers(SpellModifiers mods) { this.modifiers = mods; }
-    
+
     public ServerLevel level() { return level; }
     public LivingEntity caster() { return caster; }
     public ItemStack wand() { return wand; }

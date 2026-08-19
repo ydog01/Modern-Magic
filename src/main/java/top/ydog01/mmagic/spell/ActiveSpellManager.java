@@ -34,8 +34,7 @@ public final class ActiveSpellManager {
     
     public void continueFrom(ServerLevel level, UUID casterId, UUID wandId,
                              List<SpellNode.Connection> connections,
-                             Vec3 at, Vec3 vel, float damageMult, float speedMult,
-                             SpellModifiers mods) {
+                             Vec3 at, Vec3 vel, float damageMult, float speedMult) {
         if (connections.isEmpty()) return;
         
         LivingEntity caster = (LivingEntity) level.getEntity(casterId);
@@ -55,7 +54,6 @@ public final class ActiveSpellManager {
         context.setCurrentVelocity(vel);
         context.setDamageMult(damageMult);
         context.setSpeedMult(speedMult);
-        context.setModifiers(mods);
         
         ActiveSpell spell = new ActiveSpell(this, context, graph);
         SpellNode target = graph.getNode(connections.get(0).targetId);
