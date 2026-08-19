@@ -51,7 +51,6 @@ public class DelayedMagicMissileNode extends SpellNode {
             float damage = paramFloat("damage");
             float speed = paramFloat("speed");
 
-            missile.setDamage(damage);
             missile.setPos(ctx.getCurrentPosition());
             missile.setDeltaMovement(ctx.getCurrentVelocity().scale(speed));
 
@@ -76,7 +75,7 @@ public class DelayedMagicMissileNode extends SpellNode {
     @Override
     public ExecutionResult onCollideEntity(Entity entity, SpellContext ctx) {
         if (entity instanceof LivingEntity living) {
-            float damage = paramFloat("damage") * ctx.getDamageMult();
+            float damage = paramFloat("damage");
             living.hurt(living.damageSources().magic(), damage);
             if (missile != null && !missile.isRemoved()) {
                 missile.discard();

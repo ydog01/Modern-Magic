@@ -26,11 +26,6 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
     public static final int MAX_LIFETIME_TICKS = 200;
 
     private float damage = 4.0f;
-    private float healAmount = 4.0f;
-    private float damageMult = 1.0f;
-    private float speedMult = 1.0f;
-    private float burstRadius = 2.0f;
-    private int effectDuration = 80;
     private boolean delayed = false;
     private int flightTicks = 0;
     private boolean trigger = false;
@@ -38,17 +33,7 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
     private UUID ownerId = null;
     private UUID wandId = null;
     private List<SpellNode.Connection> continuation = List.of();
-    private int bounces = 0;
-    private int pierces = 0;
     private long expireAt = -1;
-    private float pickupRadius = 4.0f;
-    private float digRadius = 2.0f;
-    private int digLevel = 1;
-    private boolean digDrops = true;
-    private float chainRadius = 8.0f;
-    private int chainLevel = 1;
-    private boolean chainDrops = true;
-    private int lootingLevel = 0;
     private final java.util.Set<Integer> hitEntities = new java.util.HashSet<>();
 
     public MagicMissileEntity(EntityType<? extends ThrowableItemProjectile> type, Level level) {
@@ -126,27 +111,12 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         if (this.trigger) {
             continueSpell(result.getLocation().add(0.0, 2.0, 0.0), this.getDeltaMovement());
         }
-        if (this.pierces > 0) {
-            this.pierces--;
-        } else {
-            this.discard();
-        }
+        this.discard();
     }
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
         if (level().isClientSide()) {
-            return;
-        }
-        if (this.bounces > 0) {
-            this.bounces--;
-            Vec3 normal = Vec3.atLowerCornerOf(result.getDirection().getNormal());
-            Vec3 vel = this.getDeltaMovement();
-            double dot = vel.dot(normal);
-            if (dot < 0.0) {
-                this.setDeltaMovement(vel.subtract(normal.scale(2.0 * dot)).scale(0.75));
-                this.setPos(result.getLocation().add(normal.scale(0.05)));
-            }
             return;
         }
         if (this.trigger) {
@@ -163,33 +133,18 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
             return;
         }
 
-        SpellRunner.continueFrom(serverLevel, ownerId, wandId, continuation, at, vel, this.damageMult, this.speedMult);
+        SpellRunner.continueFrom(serverLevel, ownerId, wandId, continuation, at, vel);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putFloat("damage", this.damage);
-        tag.putFloat("healAmount", this.healAmount);
-        tag.putFloat("damageMult", this.damageMult);
-        tag.putFloat("speedMult", this.speedMult);
-        tag.putFloat("burstRadius", this.burstRadius);
-        tag.putInt("effectDuration", this.effectDuration);
         tag.putBoolean("delayed", this.delayed);
         tag.putInt("flightTicks", this.flightTicks);
         tag.putBoolean("trigger", this.trigger);
         tag.putInt("maxTicks", this.maxTicks);
-        tag.putInt("bounces", this.bounces);
-        tag.putInt("pierces", this.pierces);
         tag.putLong("expireAt", this.expireAt);
-        tag.putFloat("pickupRadius", this.pickupRadius);
-        tag.putFloat("digRadius", this.digRadius);
-        tag.putInt("digLevel", this.digLevel);
-        tag.putBoolean("digDrops", this.digDrops);
-        tag.putFloat("chainRadius", this.chainRadius);
-        tag.putInt("chainLevel", this.chainLevel);
-        tag.putBoolean("chainDrops", this.chainDrops);
-        tag.putInt("lootingLevel", this.lootingLevel);
         if (ownerId != null) {
             tag.putUUID("ownerId", ownerId);
         }
@@ -212,26 +167,11 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.damage = tag.getFloat("damage");
-        this.healAmount = tag.contains("healAmount") ? tag.getFloat("healAmount") : 4.0f;
-        this.damageMult = tag.contains("damageMult") ? tag.getFloat("damageMult") : 1.0f;
-        this.speedMult = tag.contains("speedMult") ? tag.getFloat("speedMult") : 1.0f;
-        this.burstRadius = tag.contains("burstRadius") ? tag.getFloat("burstRadius") : 2.0f;
-        this.effectDuration = tag.contains("effectDuration") ? tag.getInt("effectDuration") : 80;
         this.delayed = tag.getBoolean("delayed");
         this.flightTicks = tag.getInt("flightTicks");
         this.trigger = tag.getBoolean("trigger");
         this.maxTicks = tag.getInt("maxTicks");
-        this.bounces = tag.contains("bounces") ? tag.getInt("bounces") : 0;
-        this.pierces = tag.contains("pierces") ? tag.getInt("pierces") : 0;
         this.expireAt = tag.contains("expireAt") ? tag.getLong("expireAt") : -1;
-        this.pickupRadius = tag.contains("pickupRadius") ? tag.getFloat("pickupRadius") : 4.0f;
-        this.digRadius = tag.contains("digRadius") ? tag.getFloat("digRadius") : 2.0f;
-        this.digLevel = tag.contains("digLevel") ? tag.getInt("digLevel") : 1;
-        this.digDrops = !tag.contains("digDrops") || tag.getBoolean("digDrops");
-        this.chainRadius = tag.contains("chainRadius") ? tag.getFloat("chainRadius") : 8.0f;
-        this.chainLevel = tag.contains("chainLevel") ? tag.getInt("chainLevel") : 1;
-        this.chainDrops = !tag.contains("chainDrops") || tag.getBoolean("chainDrops");
-        this.lootingLevel = tag.contains("lootingLevel") ? tag.getInt("lootingLevel") : 0;
         if (tag.hasUUID("ownerId")) {
             this.ownerId = tag.getUUID("ownerId");
         }

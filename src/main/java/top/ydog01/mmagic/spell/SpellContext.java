@@ -27,8 +27,6 @@ public final class SpellContext {
     private boolean terminated = false;
     private double manaPool = 0;
     private long lastUpdateTick = 0;
-    private float damageMult = 1.0f;
-    private float speedMult = 1.0f;
     
     public SpellContext(ServerLevel level, LivingEntity caster, ItemStack wand) {
         this.level = level;
@@ -45,7 +43,7 @@ public final class SpellContext {
     private SpellContext(ServerLevel level, LivingEntity caster, ItemStack wand, SpellGraph graph,
                          Vec3 origin, Vec3 direction, UUID wandId, Vec3 currentPosition,
                          Vec3 currentVelocity, Set<UUID> removedNodes, boolean terminated,
-                         double manaPool, long lastUpdateTick, float damageMult, float speedMult) {
+                         double manaPool, long lastUpdateTick) {
         this.level = level;
         this.caster = caster;
         this.wand = wand;
@@ -59,14 +57,11 @@ public final class SpellContext {
         this.terminated = terminated;
         this.manaPool = manaPool;
         this.lastUpdateTick = lastUpdateTick;
-        this.damageMult = damageMult;
-        this.speedMult = speedMult;
     }
     
     public SpellContext clone() {
         return new SpellContext(level, caster, wand, graph, origin, direction, wandId,
-                currentPosition, currentVelocity, removedNodes, terminated, manaPool, lastUpdateTick,
-                damageMult, speedMult);
+                currentPosition, currentVelocity, removedNodes, terminated, manaPool, lastUpdateTick);
     }
     
     public boolean consumeMana(int cost) {
@@ -100,11 +95,6 @@ public final class SpellContext {
     
     public void markTerminated() { this.terminated = true; }
     public boolean isTerminated() { return terminated; }
-    
-    public float getDamageMult() { return damageMult; }
-    public void setDamageMult(float mult) { this.damageMult = mult; }
-    public float getSpeedMult() { return speedMult; }
-    public void setSpeedMult(float mult) { this.speedMult = mult; }
 
     public ServerLevel level() { return level; }
     public LivingEntity caster() { return caster; }

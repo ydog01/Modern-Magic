@@ -19,19 +19,7 @@ public final class SpellRunner {
     public static void setManager(ActiveSpellManager m) {
         manager = m;
     }
-    
-    public static void cast(Player player, ItemStack wand) {
-        if (manager == null) return;
-        if (!(player.level() instanceof ServerLevel)) return;
-        if (!WandData.isReady(wand, player.level())) return;
-        
-        SpellGraph graph = WandData.getGraph(wand);
-        if (graph.start() == null) return;
-        
-        WandData.markCast(wand, player.level());
-        manager.castSpell((ServerPlayer) player, wand);
-    }
-    
+
     public static void cast(LivingEntity caster, ItemStack wand) {
         if (manager == null) return;
         if (!(caster.level() instanceof ServerLevel)) return;
@@ -46,9 +34,9 @@ public final class SpellRunner {
     
     public static void continueFrom(ServerLevel level, UUID casterId, UUID wandId,
                                     List<SpellNode.Connection> connections,
-                                    Vec3 at, Vec3 vel, float damageMult, float speedMult) {
+                                    Vec3 at, Vec3 vel) {
         if (manager == null) return;
-        manager.continueFrom(level, casterId, wandId, connections, at, vel, damageMult, speedMult);
+        manager.continueFrom(level, casterId, wandId, connections, at, vel);
     }
     
     public static ItemStack findWand(LivingEntity living) {

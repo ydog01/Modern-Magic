@@ -71,7 +71,7 @@ public class TriggerMissileNode extends SpellNode {
     @Override
     public ExecutionResult onCollideEntity(Entity entity, SpellContext ctx) {
         if (entity instanceof LivingEntity living) {
-            float damage = paramFloat("damage") * ctx.getDamageMult();
+            float damage = paramFloat("damage");
             living.hurt(living.damageSources().magic(), damage);
             if (missile != null && !missile.isRemoved()) {
                 missile.discard();
