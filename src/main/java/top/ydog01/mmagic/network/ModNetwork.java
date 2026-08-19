@@ -632,10 +632,10 @@ public final class ModNetwork {
     private static Map<ResourceLocation, Integer> nodeTypeCounts(SpellGraph graph) {
         Map<ResourceLocation, Integer> counts = new HashMap<>();
         for (SpellNode node : graph.nodes()) {
-            if (graph.isStart(node.id())) {
+            if (graph.isStart(node.getUuid())) {
                 continue;
             }
-            counts.merge(node.type().id(), 1, Integer::sum);
+            counts.merge(node.getType().id(), 1, Integer::sum);
         }
         return counts;
     }

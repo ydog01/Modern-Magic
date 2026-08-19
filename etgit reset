@@ -1,0 +1,172 @@
+ .gitignore                                         |    4 [32m+[m
+ build-errors.log                                   |  Bin [31m0[m -> [32m120752[m bytes
+ create.py                                          |   74 [32m+[m
+ directory_contents.txt                             | 9307 [32m++++++++++++++++++++[m
+ get.py                                             |  248 [32m+[m
+ .../java/top/ydog01/mmagic/client/AltarScreen.java |  211 [32m+[m[31m-[m
+ .../top/ydog01/mmagic/client/QuestBookScreen.java  |   56 [32m+[m[31m-[m
+ .../ydog01/mmagic/entity/MagicMissileEntity.java   |   79 [32m+[m[31m-[m
+ .../top/ydog01/mmagic/entity/WizardEntity.java     |   34 [32m+[m[31m-[m
+ src/main/java/top/ydog01/mmagic/init/ModItems.java |    1 [32m+[m
+ .../java/top/ydog01/mmagic/init/ModSpellNodes.java |  378 [32m+[m[31m-[m
+ src/main/java/top/ydog01/mmagic/item/WandItem.java |    5 [31m-[m
+ .../java/top/ydog01/mmagic/network/ModNetwork.java |    4 [32m+[m[31m-[m
+ .../top/ydog01/mmagic/spell/ActiveModifier.java    |   52 [32m+[m
+ .../java/top/ydog01/mmagic/spell/ActiveNode.java   |   49 [32m+[m
+ .../top/ydog01/mmagic/spell/ActiveProjectile.java  |  102 [32m+[m
+ .../java/top/ydog01/mmagic/spell/ActiveSpell.java  |  230 [32m+[m
+ .../ydog01/mmagic/spell/ActiveSpellManager.java    |  117 [32m+[m
+ .../java/top/ydog01/mmagic/spell/ControlNode.java  |   16 [32m+[m
+ .../top/ydog01/mmagic/spell/DirectEffectNode.java  |   16 [32m+[m
+ .../top/ydog01/mmagic/spell/ExecutionResult.java   |   58 [32m+[m
+ .../java/top/ydog01/mmagic/spell/ModifierNode.java |   52 [32m+[m
+ .../top/ydog01/mmagic/spell/NodeParameter.java     |    6 [32m+[m[31m-[m
+ .../top/ydog01/mmagic/spell/ProjectileNode.java    |   50 [32m+[m
+ .../java/top/ydog01/mmagic/spell/SpellContext.java |  146 [32m+[m[31m-[m
+ .../java/top/ydog01/mmagic/spell/SpellGraph.java   |  204 [32m+[m[31m-[m
+ .../java/top/ydog01/mmagic/spell/SpellHarvest.java |   14 [32m+[m
+ .../top/ydog01/mmagic/spell/SpellModifiers.java    |   89 [32m+[m[31m-[m
+ .../java/top/ydog01/mmagic/spell/SpellNode.java    |  278 [32m+[m[31m-[m
+ .../top/ydog01/mmagic/spell/SpellNodeType.java     |   64 [32m+[m[31m-[m
+ .../top/ydog01/mmagic/spell/SpellRegistry.java     |   37 [32m+[m[31m-[m
+ .../java/top/ydog01/mmagic/spell/SpellRunner.java  |  278 [32m+[m[31m-[m
+ .../top/ydog01/mmagic/spell/SpellScheduler.java    |    5 [32m+[m[31m-[m
+ .../top/ydog01/mmagic/spell/node/ControlNodes.java |  322 [32m+[m[31m-[m
+ .../mmagic/spell/node/DelayedMagicMissileNode.java |  105 [32m+[m[31m-[m
+ .../top/ydog01/mmagic/spell/node/EffectNodes.java  |  178 [32m+[m[31m-[m
+ .../ydog01/mmagic/spell/node/ExplosionNode.java    |  104 [32m+[m[31m-[m
+ .../ydog01/mmagic/spell/node/MagicMissileNode.java |   74 [32m+[m[31m-[m
+ .../ydog01/mmagic/spell/node/ModifierNodes.java    | 1014 [32m++[m[31m-[m
+ .../top/ydog01/mmagic/spell/node/MotionNodes.java  |  143 [32m+[m
+ .../top/ydog01/mmagic/spell/node/StartNode.java    |   23 [32m+[m[31m-[m
+ .../mmagic/spell/node/TriggerMissileNode.java      |   98 [32m+[m[31m-[m
+ .../top/ydog01/mmagic/spell/node/UtilityNodes.java |  156 [32m+[m[31m-[m
+ .../resources/assets/modern_magic/lang/en_us.json  |   18 [32m+[m
+ .../resources/assets/modern_magic/lang/zh_cn.json  |   18 [32m+[m
+ .../assets/modern_magic/models/block/altar.json    |   79 [32m+[m[31m-[m
+ .../modern_magic/models/item/magic_crystal.json    |    4 [32m+[m[31m-[m
+ .../models/item/spell_node_absorption.json         |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_accelerator.json        |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_amplifier.json          |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_area_damage.json        |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_bounce.json             |    2 [32m+[m[31m-[m
+ .../modern_magic/models/item/spell_node_burst.json |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_chain_dig.json          |    6 [32m+[m
+ .../models/item/spell_node_condition.json          |    4 [32m+[m[31m-[m
+ .../models/item/spell_node_decelerate.json         |    4 [32m+[m[31m-[m
+ .../item/spell_node_delayed_magic_missile.json     |    2 [32m+[m[31m-[m
+ .../modern_magic/models/item/spell_node_dig.json   |    6 [32m+[m
+ .../models/item/spell_node_direction.json          |    4 [32m+[m[31m-[m
+ .../modern_magic/models/item/spell_node_echo.json  |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_explosion.json          |    2 [32m+[m[31m-[m
+ .../modern_magic/models/item/spell_node_fire.json  |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_fire_nova.json          |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_fire_resist.json        |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_freeze_pulse.json       |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_gravity.json            |    2 [32m+[m[31m-[m
+ .../modern_magic/models/item/spell_node_heal.json  |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_heal_mod.json           |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_homing.json             |    2 [32m+[m[31m-[m
+ .../modern_magic/models/item/spell_node_ice.json   |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_invisibility.json       |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_jump_boost.json         |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_knockback_pulse.json    |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_launch.json             |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_levitate.json           |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_lightning.json          |    3 [32m+[m[31m-[m
+ .../modern_magic/models/item/spell_node_loop.json  |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_looting.json            |    6 [32m+[m
+ .../models/item/spell_node_magic_missile.json      |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_multi_cast.json         |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_night_vision.json       |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_offset_forward.json     |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_offset_up.json          |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_pickup.json             |    6 [32m+[m
+ .../models/item/spell_node_pierce.json             |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_pierce_wall.json        |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_poison.json             |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_pull_pulse.json         |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_random_cast.json        |    3 [32m+[m[31m-[m
+ .../modern_magic/models/item/spell_node_regen.json |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_rotate.json             |    4 [32m+[m[31m-[m
+ .../models/item/spell_node_set_speed.json          |    4 [32m+[m[31m-[m
+ .../models/item/spell_node_silk_touch.json         |    6 [32m+[m
+ .../models/item/spell_node_slow_fall.json          |    3 [32m+[m[31m-[m
+ .../modern_magic/models/item/spell_node_speed.json |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_speed_return.json       |    4 [32m+[m[31m-[m
+ .../models/item/spell_node_stabilize.json          |    4 [32m+[m[31m-[m
+ .../models/item/spell_node_strength.json           |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_teleport.json           |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_terminate.json          |    4 [32m+[m[31m-[m
+ .../models/item/spell_node_terminate_all.json      |    4 [32m+[m[31m-[m
+ .../models/item/spell_node_trigger_missile.json    |    2 [32m+[m[31m-[m
+ .../modern_magic/models/item/spell_node_wait.json  |    4 [32m+[m[31m-[m
+ .../modern_magic/models/item/spell_node_water.json |    2 [32m+[m[31m-[m
+ .../models/item/spell_node_water_breath.json       |    3 [32m+[m[31m-[m
+ .../models/item/spell_node_wither.json             |    2 [32m+[m[31m-[m
+ .../assets/modern_magic/models/item/wand.json      |    6 [32m+[m[31m-[m
+ .../assets/modern_magic/textures/block/altar.png   |  Bin [31m479[m -> [32m1562[m bytes
+ .../modern_magic/textures/item/magic_crystal.png   |  Bin [31m0[m -> [32m434[m bytes
+ .../modern_magic/textures/item/quest_book.png      |  Bin [31m0[m -> [32m416[m bytes
+ .../textures/item/spell_node_absorption.png        |  Bin [31m0[m -> [32m484[m bytes
+ .../textures/item/spell_node_accelerator.png       |  Bin [31m0[m -> [32m439[m bytes
+ .../textures/item/spell_node_amplifier.png         |  Bin [31m0[m -> [32m426[m bytes
+ .../textures/item/spell_node_area_damage.png       |  Bin [31m0[m -> [32m292[m bytes
+ .../textures/item/spell_node_bounce.png            |  Bin [31m0[m -> [32m305[m bytes
+ .../textures/item/spell_node_burst.png             |  Bin [31m0[m -> [32m316[m bytes
+ .../textures/item/spell_node_chain_dig.png         |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_condition.png         |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_decelerate.png        |  Bin [31m0[m -> [32m126[m bytes
+ .../item/spell_node_delayed_magic_missile.png      |  Bin [31m0[m -> [32m393[m bytes
+ .../modern_magic/textures/item/spell_node_dig.png  |  Bin [31m0[m -> [32m310[m bytes
+ .../textures/item/spell_node_direction.png         |  Bin [31m0[m -> [32m126[m bytes
+ .../modern_magic/textures/item/spell_node_echo.png |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_explosion.png         |  Bin [31m0[m -> [32m348[m bytes
+ .../modern_magic/textures/item/spell_node_fire.png |  Bin [31m0[m -> [32m259[m bytes
+ .../textures/item/spell_node_fire_nova.png         |  Bin [31m0[m -> [32m488[m bytes
+ .../textures/item/spell_node_fire_resist.png       |  Bin [31m0[m -> [32m406[m bytes
+ .../textures/item/spell_node_freeze_pulse.png      |  Bin [31m0[m -> [32m395[m bytes
+ .../textures/item/spell_node_gravity.png           |  Bin [31m0[m -> [32m279[m bytes
+ .../modern_magic/textures/item/spell_node_heal.png |  Bin [31m0[m -> [32m366[m bytes
+ .../textures/item/spell_node_heal_mod.png          |  Bin [31m0[m -> [32m285[m bytes
+ .../textures/item/spell_node_homing.png            |  Bin [31m0[m -> [32m418[m bytes
+ .../modern_magic/textures/item/spell_node_ice.png  |  Bin [31m0[m -> [32m515[m bytes
+ .../textures/item/spell_node_invisibility.png      |  Bin [31m0[m -> [32m400[m bytes
+ .../textures/item/spell_node_jump_boost.png        |  Bin [31m0[m -> [32m387[m bytes
+ .../textures/item/spell_node_knockback_pulse.png   |  Bin [31m0[m -> [32m242[m bytes
+ .../textures/item/spell_node_launch.png            |  Bin [31m0[m -> [32m304[m bytes
+ .../textures/item/spell_node_levitate.png          |  Bin [31m0[m -> [32m358[m bytes
+ .../textures/item/spell_node_lightning.png         |  Bin [31m0[m -> [32m299[m bytes
+ .../modern_magic/textures/item/spell_node_loop.png |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_looting.png           |  Bin [31m0[m -> [32m410[m bytes
+ .../textures/item/spell_node_magic_missile.png     |  Bin [31m0[m -> [32m345[m bytes
+ .../textures/item/spell_node_multi_cast.png        |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_night_vision.png      |  Bin [31m0[m -> [32m382[m bytes
+ .../textures/item/spell_node_offset_forward.png    |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_offset_up.png         |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_pickup.png            |  Bin [31m0[m -> [32m271[m bytes
+ .../textures/item/spell_node_pierce.png            |  Bin [31m0[m -> [32m381[m bytes
+ .../textures/item/spell_node_pierce_wall.png       |  Bin [31m0[m -> [32m257[m bytes
+ .../textures/item/spell_node_poison.png            |  Bin [31m0[m -> [32m234[m bytes
+ .../textures/item/spell_node_pull_pulse.png        |  Bin [31m0[m -> [32m397[m bytes
+ .../textures/item/spell_node_random_cast.png       |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_regen.png             |  Bin [31m0[m -> [32m371[m bytes
+ .../textures/item/spell_node_rotate.png            |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_set_speed.png         |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_silk_touch.png        |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_slow_fall.png         |  Bin [31m0[m -> [32m403[m bytes
+ .../textures/item/spell_node_speed.png             |  Bin [31m0[m -> [32m491[m bytes
+ .../textures/item/spell_node_speed_return.png      |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_stabilize.png         |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_strength.png          |  Bin [31m0[m -> [32m363[m bytes
+ .../textures/item/spell_node_teleport.png          |  Bin [31m0[m -> [32m403[m bytes
+ .../textures/item/spell_node_terminate.png         |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_terminate_all.png     |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_trigger_missile.png   |  Bin [31m0[m -> [32m389[m bytes
+ .../modern_magic/textures/item/spell_node_wait.png |  Bin [31m0[m -> [32m126[m bytes
+ .../textures/item/spell_node_water.png             |  Bin [31m0[m -> [32m235[m bytes
+ .../textures/item/spell_node_water_breath.png      |  Bin [31m0[m -> [32m330[m bytes
+ .../textures/item/spell_node_wither.png            |  Bin [31m0[m -> [32m291[m bytes
+ .../assets/modern_magic/textures/item/wand.png     |  Bin [31m0[m -> [32m364[m bytes
+ .../loot_modifiers}/global_loot_modifiers.json     |    0
+ 171 files changed, 13228 insertions(+), 1561 deletions(-)

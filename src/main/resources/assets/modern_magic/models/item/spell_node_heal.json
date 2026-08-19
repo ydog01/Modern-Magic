@@ -1,7 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "minecraft:item/nether_star"
+    "layer0": "modern_magic:item/spell_node_heal"
   }
 }
-

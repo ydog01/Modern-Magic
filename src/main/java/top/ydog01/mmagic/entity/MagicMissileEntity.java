@@ -17,6 +17,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import top.ydog01.mmagic.spell.SpellHarvest;
 import top.ydog01.mmagic.spell.SpellModifiers;
 import top.ydog01.mmagic.spell.SpellNode;
 import top.ydog01.mmagic.spell.SpellRunner;
@@ -28,7 +29,6 @@ import java.util.UUID;
 public class MagicMissileEntity extends ThrowableItemProjectile {
 
     public static final int MAX_LIFETIME_TICKS = 200;
-
     public static final double HOMING_RANGE = 48.0;
 
     private float damage = 4.0f;
@@ -50,6 +50,14 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
     private int bounces = 0;
     private int pierces = 0;
     private long expireAt = -1;
+    private float pickupRadius = 4.0f;
+    private float digRadius = 2.0f;
+    private int digLevel = 1;
+    private boolean digDrops = true;
+    private float chainRadius = 8.0f;
+    private int chainLevel = 1;
+    private boolean chainDrops = true;
+    private int lootingLevel = 0;
     private final java.util.Set<Integer> hitEntities = new java.util.HashSet<>();
 
     public MagicMissileEntity(EntityType<? extends ThrowableItemProjectile> type, Level level) {
@@ -64,7 +72,6 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
 
     public MagicMissileEntity(EntityType<? extends ThrowableItemProjectile> type, LivingEntity shooter, Level level) {
         super(type, shooter, level);
-
         this.setNoGravity(true);
     }
 
@@ -83,6 +90,14 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         this.burstRadius = modifiers.burstRadius();
         this.bounces = modifiers.bounces();
         this.pierces = modifiers.pierces();
+        this.pickupRadius = modifiers.pickupRadius();
+        this.digRadius = modifiers.digRadius();
+        this.digLevel = modifiers.digLevel();
+        this.digDrops = modifiers.digDrops();
+        this.chainRadius = modifiers.chainRadius();
+        this.chainLevel = modifiers.chainLevel();
+        this.chainDrops = modifiers.chainDrops();
+        this.lootingLevel = modifiers.lootingLevel();
         this.setNoGravity((this.mods & SpellModifiers.GRAVITY) == 0);
     }
 
@@ -223,9 +238,9 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
             living.heal(this.healAmount * this.damageMult);
         } else if ((this.mods & SpellModifiers.WATER) != 0) {
             target.clearFire();
-            target.hurt(target.damageSources().indirectMagic(this, getOwner()), this.damage * this.damageMult);
+            hurtWithLooting(target, this.damage * this.damageMult);
         } else {
-            target.hurt(target.damageSources().indirectMagic(this, getOwner()), this.damage * this.damageMult);
+            hurtWithLooting(target, this.damage * this.damageMult);
         }
         if (target instanceof LivingEntity living) {
             if ((this.mods & SpellModifiers.FIRE) != 0) {
@@ -247,6 +262,10 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         if ((this.mods & SpellModifiers.BURST) != 0) {
             burst(result.getLocation());
         }
+        if ((this.mods & SpellModifiers.PICKUP) != 0 && level() instanceof ServerLevel serverLevel
+                && getOwner() instanceof LivingEntity owner) {
+            SpellHarvest.pickup(serverLevel, owner, result.getLocation(), this.pickupRadius);
+        }
         if (this.trigger) {
             continueSpell(result.getLocation().add(0.0, 2.0, 0.0), this.getDeltaMovement());
         }
@@ -254,6 +273,19 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
             this.pierces--;
         } else {
             this.discard();
+        }
+    }
+
+    private void hurtWithLooting(Entity target, float amount) {
+        if ((this.mods & SpellModifiers.LOOTING) != 0 && this.lootingLevel > 0) {
+            SpellHarvest.setPendingLooting(target.getId(), this.lootingLevel);
+            try {
+                target.hurt(target.damageSources().indirectMagic(this, getOwner()), amount);
+            } finally {
+                SpellHarvest.clearPendingLooting(target.getId());
+            }
+        } else {
+            target.hurt(target.damageSources().indirectMagic(this, getOwner()), amount);
         }
     }
 
@@ -279,6 +311,21 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         if ((this.mods & SpellModifiers.BURST) != 0) {
             burst(result.getLocation());
         }
+        if (level() instanceof ServerLevel serverLevel && getOwner() instanceof LivingEntity owner) {
+            boolean silk = (this.mods & SpellModifiers.SILK_TOUCH) != 0;
+            int fortune = (this.mods & SpellModifiers.LOOTING) != 0 ? this.lootingLevel : 0;
+            if ((this.mods & SpellModifiers.DIG) != 0) {
+                SpellHarvest.digArea(serverLevel, owner, result.getBlockPos(), this.digRadius,
+                        this.digLevel, this.digDrops, silk, fortune);
+            }
+            if ((this.mods & SpellModifiers.CHAIN_DIG) != 0) {
+                SpellHarvest.chainDig(serverLevel, owner, result.getBlockPos(), this.chainRadius,
+                        this.chainLevel, this.chainDrops, silk, fortune);
+            }
+            if ((this.mods & SpellModifiers.PICKUP) != 0) {
+                SpellHarvest.pickup(serverLevel, owner, result.getLocation(), this.pickupRadius);
+            }
+        }
         if (this.trigger) {
             continueSpell(result.getLocation().add(0.0, 2.0, 0.0), this.getDeltaMovement());
         }
@@ -298,7 +345,9 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         }
 
         SpellRunner.continueFrom(serverLevel, ownerId, wandId, continuation, at, vel, this.damageMult, this.speedMult,
-                new SpellModifiers(this.mods, this.healAmount, this.burstRadius, this.bounces, this.pierces));
+                new SpellModifiers(this.mods, this.healAmount, this.burstRadius, this.bounces, this.pierces,
+                        this.pickupRadius, this.digRadius, this.digLevel, this.digDrops,
+                        this.chainRadius, this.chainLevel, this.chainDrops, this.lootingLevel));
     }
 
     @Override
@@ -318,6 +367,14 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         tag.putInt("bounces", this.bounces);
         tag.putInt("pierces", this.pierces);
         tag.putLong("expireAt", this.expireAt);
+        tag.putFloat("pickupRadius", this.pickupRadius);
+        tag.putFloat("digRadius", this.digRadius);
+        tag.putInt("digLevel", this.digLevel);
+        tag.putBoolean("digDrops", this.digDrops);
+        tag.putFloat("chainRadius", this.chainRadius);
+        tag.putInt("chainLevel", this.chainLevel);
+        tag.putBoolean("chainDrops", this.chainDrops);
+        tag.putInt("lootingLevel", this.lootingLevel);
         if (ownerId != null) {
             tag.putUUID("ownerId", ownerId);
         }
@@ -329,7 +386,7 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
             for (SpellNode.Connection c : continuation) {
                 CompoundTag ct = new CompoundTag();
                 ct.putUUID("target", c.targetId);
-                ct.putInt("port", c.targetInputPort);
+                ct.putInt("port", c.targetPort);
                 list.add(ct);
             }
             tag.put("continuation", list);
@@ -353,6 +410,14 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         this.bounces = tag.contains("bounces") ? tag.getInt("bounces") : 0;
         this.pierces = tag.contains("pierces") ? tag.getInt("pierces") : 0;
         this.expireAt = tag.contains("expireAt") ? tag.getLong("expireAt") : -1;
+        this.pickupRadius = tag.contains("pickupRadius") ? tag.getFloat("pickupRadius") : 4.0f;
+        this.digRadius = tag.contains("digRadius") ? tag.getFloat("digRadius") : 2.0f;
+        this.digLevel = tag.contains("digLevel") ? tag.getInt("digLevel") : 1;
+        this.digDrops = !tag.contains("digDrops") || tag.getBoolean("digDrops");
+        this.chainRadius = tag.contains("chainRadius") ? tag.getFloat("chainRadius") : 8.0f;
+        this.chainLevel = tag.contains("chainLevel") ? tag.getInt("chainLevel") : 1;
+        this.chainDrops = !tag.contains("chainDrops") || tag.getBoolean("chainDrops");
+        this.lootingLevel = tag.contains("lootingLevel") ? tag.getInt("lootingLevel") : 0;
         if (tag.hasUUID("ownerId")) {
             this.ownerId = tag.getUUID("ownerId");
         }

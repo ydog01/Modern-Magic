@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public final class SpellNodeType {
+    
     private final ResourceLocation id;
     private final int inputCount;
     private final int outputCount;
@@ -17,19 +18,13 @@ public final class SpellNodeType {
     private final Supplier<SpellNode> factory;
     private final Supplier<ItemStack> icon;
     private final List<NodeParameter> parameters;
-
     private final List<String> categories;
-
+    
     public SpellNodeType(ResourceLocation id, int inputCount, int outputCount, int manaCost, int delayTicks,
                          Supplier<SpellNode> factory, Supplier<ItemStack> icon) {
-        this(id, inputCount, outputCount, manaCost, delayTicks, factory, icon, List.of());
+        this(id, inputCount, outputCount, manaCost, delayTicks, factory, icon, List.of(), List.of());
     }
-
-    public SpellNodeType(ResourceLocation id, int inputCount, int outputCount, int manaCost, int delayTicks,
-                         Supplier<SpellNode> factory, Supplier<ItemStack> icon, List<NodeParameter> parameters) {
-        this(id, inputCount, outputCount, manaCost, delayTicks, factory, icon, parameters, List.of());
-    }
-
+    
     public SpellNodeType(ResourceLocation id, int inputCount, int outputCount, int manaCost, int delayTicks,
                          Supplier<SpellNode> factory, Supplier<ItemStack> icon, List<NodeParameter> parameters,
                          List<String> categories) {
@@ -43,50 +38,27 @@ public final class SpellNodeType {
         this.parameters = List.copyOf(parameters);
         this.categories = List.copyOf(categories);
     }
-
-    public ResourceLocation id() {
-        return id;
-    }
-
-    public int inputCount() {
-        return inputCount;
-    }
-
-    public int outputCount() {
-        return outputCount;
-    }
-
-    public int manaCost() {
-        return manaCost;
-    }
-
-    public int delayTicks() {
-        return delayTicks;
-    }
-
-    public ItemStack icon() {
-        return icon.get();
-    }
-
+    
+    public ResourceLocation id() { return id; }
+    public int inputCount() { return inputCount; }
+    public int outputCount() { return outputCount; }
+    public int manaCost() { return manaCost; }
+    public int delayTicks() { return delayTicks; }
+    public ItemStack icon() { return icon.get(); }
+    public List<NodeParameter> parameters() { return parameters; }
+    public List<String> categories() { return categories; }
+    
     public Component displayName() {
         return Component.translatable("spell_node." + id.getNamespace() + "." + id.getPath());
     }
-
+    
     public Component description() {
         return Component.translatable("spell_node." + id.getNamespace() + "." + id.getPath() + ".desc");
     }
-
-    public List<NodeParameter> parameters() {
-        return parameters;
-    }
-
-    public List<String> categories() {
-        return categories;
-    }
-
+    
     public SpellNode create(UUID nodeId) {
         SpellNode node = factory.get();
-        node.init(nodeId, this);
+        node.setUuid(nodeId);
         return node;
     }
 }

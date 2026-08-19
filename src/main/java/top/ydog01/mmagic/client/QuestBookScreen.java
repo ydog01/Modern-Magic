@@ -18,12 +18,15 @@ import top.ydog01.mmagic.quest.Quests;
 import java.util.List;
 
 public class QuestBookScreen extends Screen {
-    private static final int PANEL_W = 250;
-    private static final int PANEL_H = 178;
+    private static final int PANEL_W = 292;
+    private static final int PANEL_H = 200;
     private static final int LIST_W = 104;
     private static final int ROW_H = 20;
     private static final int DETAIL_X = 8 + LIST_W + 8;
     private static final int DETAIL_W = PANEL_W - DETAIL_X - 8;
+    private static final int LINE_H = 9;
+    private static final int RECIPE_H = 58;
+    private static final int SCROLL_STEP = 12;
 
     private QuestProgress progress;
     private QuestDef selected;
@@ -49,6 +52,35 @@ public class QuestBookScreen extends Screen {
 
     private int top() {
         return (height - PANEL_H) / 2;
+    }
+
+    private Component descComponent() {
+        return Component.translatable("quest.modern_magic." + selected.id().getPath() + ".desc");
+    }
+
+    private int detailContentHeight() {
+        if (selected == null) {
+            return 0;
+        }
+        int h = 0;
+        if (selected.recipeId() != null) {
+            h += RECIPE_H;
+        }
+        h += font.split(descComponent(), DETAIL_W).size() * LINE_H;
+        h += 2 + 12 + 12 + 18 + 12 + LINE_H;
+        return h;
+    }
+
+    private double maxDetailScroll() {
+        return Math.max(0, detailContentHeight() - (detailBottom() - detailTop()));
+    }
+
+    private int detailTop() {
+        return top() + 36;
+    }
+
+    private int detailBottom() {
+        return top() + PANEL_H - 30;
     }
 
     @Override
@@ -94,19 +126,22 @@ public class QuestBookScreen extends Screen {
         g.renderItem(selected.icon(), x, y);
         g.drawString(font, Component.translatable("quest.modern_magic." + selected.id().getPath() + ".title"),
                 x + 20, y + 4, 0xFFFFFF);
-        int contentTop = y + 22;
-        int contentBottom = t + PANEL_H - 30;
+        int contentTop = detailTop();
+        int contentBottom = detailBottom();
         int right = l + PANEL_W - 8;
         g.enableScissor(x, contentTop, right, contentBottom);
+        double maxScroll = maxDetailScroll();
+        if (detailScroll > maxScroll) {
+            detailScroll = maxScroll;
+        }
         int shiftedStart = contentTop - (int) detailScroll;
         int textY = shiftedStart;
         if (selected.recipeId() != null) {
             textY = renderRecipe(g, mouseX, mouseY, x, textY) + 4;
         }
-        for (FormattedCharSequence line : font.split(Component.translatable("quest.modern_magic." + selected.id().getPath() + ".desc"),
-                DETAIL_W)) {
+        for (FormattedCharSequence line : font.split(descComponent(), DETAIL_W)) {
             g.drawString(font, line, x, textY, 0xB0B0B0);
-            textY += 9;
+            textY += LINE_H;
         }
         textY += 2;
         QuestProgress.Entry entry = progress.entries().get(selected.id());
@@ -128,9 +163,6 @@ public class QuestBookScreen extends Screen {
         textY += 18;
         g.drawString(font, Component.translatable("quest.modern_magic.xp", selected.xp()), x, textY, 0x55FF55);
         g.disableScissor();
-        int contentHeight = textY - shiftedStart;
-        double maxScroll = Math.max(0, contentHeight - (contentBottom - contentTop));
-        detailScroll = Math.max(0, Math.min(detailScroll, maxScroll));
         int bx = l + DETAIL_X + DETAIL_W - 64;
         int by = t + PANEL_H - 24;
         boolean claimable = isClaimable(selected);
@@ -195,7 +227,7 @@ public class QuestBookScreen extends Screen {
         if (mouseX >= rx && mouseX < rx + 16 && mouseY >= ry && mouseY < ry + 16) {
             g.renderTooltip(font, result, mouseX, mouseY);
         }
-        return y + 54;
+        return y + RECIPE_H;
     }
 
     private QuestProgress.Entry entryOf(QuestDef def) {
@@ -231,7 +263,7 @@ public class QuestBookScreen extends Screen {
         int l = left();
         int t = top();
         if (mouseX >= l + DETAIL_X && mouseX <= l + PANEL_W - 8 && mouseY >= t + 14 && mouseY <= t + PANEL_H) {
-            detailScroll = Math.max(0, detailScroll - scrollY * 12);
+            detailScroll = Math.max(0, Math.min(detailScroll - scrollY * SCROLL_STEP, maxDetailScroll()));
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);

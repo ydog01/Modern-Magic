@@ -8,8 +8,8 @@ public record NodeParameter(
         float step,
         float defaultValue,
         String labelKey,
-        float costPerUnit) {
-
+        float costPerUnit
+) {
     public enum Kind {
         INT, FLOAT, BOOL
     }

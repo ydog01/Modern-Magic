@@ -38,6 +38,7 @@ public final class ModItems {
             "fire", "ice", "poison", "wither", "levitate",
             "water", "heal_mod", "homing", "burst",
             "bounce", "pierce", "gravity", "pierce_wall",
+            "pickup", "dig", "chain_dig", "silk_touch", "looting",
             "heal", "speed", "strength", "invisibility", "fire_resist",
             "regen", "night_vision", "jump_boost", "slow_fall", "water_breath", "absorption",
             "lightning", "teleport", "knockback_pulse", "pull_pulse", "freeze_pulse",

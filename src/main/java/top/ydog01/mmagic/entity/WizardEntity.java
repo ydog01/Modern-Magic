@@ -33,9 +33,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import top.ydog01.mmagic.init.ModItems;
-import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.SpellGraph;
-import top.ydog01.mmagic.spell.SpellModifiers;
 import top.ydog01.mmagic.spell.SpellNode;
 import top.ydog01.mmagic.spell.SpellNodeType;
 import top.ydog01.mmagic.spell.SpellRegistry;
@@ -166,7 +164,7 @@ public class WizardEntity extends Skeleton {
         float x = 0;
         for (SpellNodeType type : chain) {
             SpellNode node = graph.addNode(type, UUID.randomUUID(), x, 0);
-            graph.connect(prev.id(), 0, node.id(), 0);
+            graph.connect(prev.getUuid(), 0, node.getUuid(), 0);
             prev = node;
             x += 120;
         }
@@ -293,35 +291,15 @@ public class WizardEntity extends Skeleton {
             return;
         }
         WandData.markCast(wand, level());
+        if (!(level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
         SpellGraph graph = WandData.getGraph(wand);
-        SpellRunner.trackWand(wand, this, graph);
         if (graph.nodes().size() <= 1) {
             teleportAway(target);
             return;
         }
-        if (!(level() instanceof ServerLevel serverLevel)) {
-            return;
-        }
-        SkillCategory category = activeWand >= 0 && activeWand < wandCategory.size()
-                ? wandCategory.get(activeWand) : SkillCategory.ATTACK;
-        Vec3 origin = getEyePosition();
-        Vec3 dir;
-        if (category == SkillCategory.MOBILITY) {
-            dir = new Vec3(getX() - target.getX(), 0.0, getZ() - target.getZ());
-            if (dir.lengthSqr() < 0.01) {
-                dir = new Vec3(getLookAngle().x, 0.0, getLookAngle().z);
-            }
-            dir = dir.normalize().add(0.0, 0.45, 0.0);
-        } else {
-            dir = target.position().add(0.0, target.getBbHeight() * 0.5, 0.0).subtract(origin);
-            if (dir.lengthSqr() < 0.0001) {
-                dir = getLookAngle();
-            } else {
-                dir = dir.normalize();
-            }
-        }
-        SpellContext ctx = new SpellContext(serverLevel, this, wand, graph);
-        SpellRunner.activate(ctx, graph.start(), origin, dir, 1.0f, 1.0f, new SpellModifiers());
+        SpellRunner.cast(this, wand);
         swing(InteractionHand.MAIN_HAND);
     }
 

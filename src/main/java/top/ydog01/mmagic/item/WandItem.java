@@ -34,11 +34,6 @@ public class WandItem extends Item {
     }
 
     @Override
-    public boolean isFoil(ItemStack stack) {
-        return true;
-    }
-
-    @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.modern_magic.wand.max_mana", WandData.getMaxMana(stack)));
         tooltip.add(Component.translatable("tooltip.modern_magic.wand.regen", String.format("%.1f", WandData.getRegen(stack))));

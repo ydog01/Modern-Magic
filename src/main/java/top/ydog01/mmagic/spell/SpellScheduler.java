@@ -15,8 +15,7 @@ public final class SpellScheduler {
     private static final Deque<Runnable> QUEUE = new ArrayDeque<>();
     private static final List<Task> DELAYED = new ArrayList<>();
 
-    private SpellScheduler() {
-    }
+    private SpellScheduler() {}
 
     public static void schedule(int delayTicks, Runnable action) {
         if (delayTicks <= 0) {
@@ -40,7 +39,6 @@ public final class SpellScheduler {
             try {
                 action.run();
             } catch (Exception e) {
-                System.err.println("[modern_magic] spell task failed: " + e);
                 e.printStackTrace();
             }
         }
@@ -49,7 +47,6 @@ public final class SpellScheduler {
     private static final class Task {
         int remaining;
         final Runnable action;
-
         Task(int remaining, Runnable action) {
             this.remaining = remaining;
             this.action = action;

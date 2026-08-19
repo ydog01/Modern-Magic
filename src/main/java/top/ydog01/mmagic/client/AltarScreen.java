@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.network.PacketDistributor;
 import top.ydog01.mmagic.menu.AltarMenu;
 import top.ydog01.mmagic.network.ModNetwork;
@@ -23,16 +24,7 @@ import top.ydog01.mmagic.spell.SpellNodeType;
 import top.ydog01.mmagic.spell.SpellRegistry;
 import top.ydog01.mmagic.util.SpellCost;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
     private static final int TAB_PRAY = 0;
@@ -94,6 +86,23 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
     public AltarScreen(AltarMenu menu, Inventory inventory, Component title) {
         super(title);
         this.menu = menu;
+    }
+
+    // ==================== 节点位置辅助 ====================
+    // 关键：使用 node.getUuid()，现在它返回的是传入的 nodeId
+
+    private float getNodeX(SpellNode node) {
+        Vec2 pos = graph.getMenuPosition(node.getUuid());
+        return pos != null ? pos.x : 0;
+    }
+
+    private float getNodeY(SpellNode node) {
+        Vec2 pos = graph.getMenuPosition(node.getUuid());
+        return pos != null ? pos.y : 0;
+    }
+
+    private void setNodePosition(SpellNode node, float x, float y) {
+        graph.setMenuPosition(node.getUuid(), new Vec2(x, y));
     }
 
     @Override
@@ -572,43 +581,47 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         return rows;
     }
 
+    // ==================== 连接线 ====================
+
     private void renderConnections(GuiGraphics g, int cLeft, int cTop, int mx, int my) {
         for (SpellNode node : graph.nodes()) {
-            int nx = screenX(node.x());
-            int ny = screenY(node.y());
+            int nx = screenX(getNodeX(node));
+            int ny = screenY(getNodeY(node));
             int nw = scaled(NODE_W);
-            for (int p = 0; p < node.outputCount(); p++) {
-                for (SpellNode.Connection c : node.outputs(p)) {
-                    SpellNode target = graph.node(c.targetId);
+            for (int p = 0; p < node.getOutputCount(); p++) {
+                for (SpellNode.Connection c : node.getConnections(p)) {
+                    SpellNode target = graph.getNode(c.targetId);
                     if (target == null) {
                         continue;
                     }
                     int sx = nx + nw + 1;
                     int sy = ny + scaled(portY(node, p, false));
-                    int tx = screenX(target.x()) - 1;
-                    int ty = screenY(target.y()) + scaled(portY(target, c.targetInputPort, true));
+                    int tx = screenX(getNodeX(target)) - 1;
+                    int ty = screenY(getNodeY(target)) + scaled(portY(target, c.targetPort, true));
                     drawLine(g, sx, sy, tx, ty, 0xFF7FA9E8);
                 }
             }
         }
         if (pendingSource != null) {
-            SpellNode source = graph.node(pendingSource);
+            SpellNode source = graph.getNode(pendingSource);
             if (source != null) {
-                int sx = screenX(source.x()) + scaled(NODE_W) + 1;
-                int sy = screenY(source.y()) + scaled(portY(source, pendingOutPort, false));
+                int sx = screenX(getNodeX(source)) + scaled(NODE_W) + 1;
+                int sy = screenY(getNodeY(source)) + scaled(portY(source, pendingOutPort, false));
                 drawLine(g, sx, sy, mx, my, 0xFFFFE08A);
             }
         }
     }
 
+    // ==================== 节点体 ====================
+
     private void renderNodeBodies(GuiGraphics g, int cLeft, int cTop) {
         for (SpellNode node : graph.nodes()) {
-            int nx = screenX(node.x());
-            int ny = screenY(node.y());
+            int nx = screenX(getNodeX(node));
+            int ny = screenY(getNodeY(node));
             int nw = scaled(NODE_W);
             int nh = scaled(nodeH(node));
-            boolean isStart = graph.isStart(node.id());
-            boolean selected = node.id().equals(pendingSource) || node.id().equals(dragNode);
+            boolean isStart = graph.isStart(node.getUuid());
+            boolean selected = node.getUuid().equals(pendingSource) || node.getUuid().equals(dragNode);
             int bg = isStart ? 0xFF335533 : 0xFF444444;
             g.fill(nx, ny, nx + nw, ny + nh, bg);
             int border = selected ? 0xFFFFDD66 : 0xFF999999;
@@ -617,20 +630,22 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
             g.fill(nx, ny + nh - 1, nx + nw, ny + nh, border);
             g.fill(nx + nw - 1, ny, nx + nw, ny + nh, border);
 
-            drawScaledCenteredText(g, node.type().displayName().getString(), nx + nw / 2, ny + scaled(3), 0xFFFFFFFF);
-            drawScaledCenteredText(g, Component.translatable("screen.modern_magic.mana_cost", node.manaCost()).getString(),
+            drawScaledCenteredText(g, node.getType().displayName().getString(), nx + nw / 2, ny + scaled(3), 0xFFFFFFFF);
+            drawScaledCenteredText(g, Component.translatable("screen.modern_magic.mana_cost", node.getManaCost()).getString(),
                     nx + nw / 2, ny + scaled(14), 0xFFAAAAAA);
 
             renderParams(g, nx, ny, nw, node);
         }
     }
 
+    // ==================== 参数 ====================
+
     private void renderParams(GuiGraphics g, int nx, int ny, int nw, SpellNode node) {
-        if (node.type().id().getPath().equals("condition")) {
+        if (node.getType().id().getPath().equals("condition")) {
             renderConditionParams(g, nx, ny, nw, node);
             return;
         }
-        List<NodeParameter> ps = node.type().parameters();
+        List<NodeParameter> ps = node.getType().parameters();
         for (int i = 0; i < ps.size(); i++) {
             NodeParameter p = ps.get(i);
             int py = ny + scaled(headerH(node) + i * PARAM_ROW_H);
@@ -661,7 +676,7 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
     }
 
     private void renderConditionParams(GuiGraphics g, int nx, int ny, int nw, SpellNode node) {
-        List<NodeParameter> ps = node.type().parameters();
+        List<NodeParameter> ps = node.getType().parameters();
         int ph = scaled(PARAM_ROW_H);
         int py0 = ny + scaled(headerH(node));
         g.fill(nx, py0, nx + nw, py0 + ph, 0xFF353535);
@@ -688,18 +703,20 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         drawScaledCenteredText(g, "→ 2", nx + scaled(88), py1 + scaled(3), 0xFFAAAAAA);
     }
 
+    // ==================== 端口 ====================
+
     private void renderPorts(GuiGraphics g, int cLeft, int cTop) {
         for (SpellNode node : graph.nodes()) {
-            int nx = screenX(node.x());
-            int ny = screenY(node.y());
+            int nx = screenX(getNodeX(node));
+            int ny = screenY(getNodeY(node));
             int nw = scaled(NODE_W);
-            for (int i = 0; i < node.inputCount(); i++) {
+            for (int i = 0; i < node.getInputCount(); i++) {
                 int py = ny + scaled(portY(node, i, true));
                 int color = inputConnected(node, i) ? 0xFF66FF66 : 0xFF33BB33;
                 g.fill(nx - 5, py - 1, nx + 3, py + 7, 0xFF0A0A0A);
                 g.fill(nx - 4, py, nx + 2, py + 6, color);
             }
-            for (int o = 0; o < node.outputCount(); o++) {
+            for (int o = 0; o < node.getOutputCount(); o++) {
                 int py = ny + scaled(portY(node, o, false));
                 g.fill(nx + nw - 3, py - 1, nx + nw + 5, py + 7, 0xFF0A0A0A);
                 g.fill(nx + nw - 2, py, nx + nw + 4, py + 6, 0xFFCC4444);
@@ -708,18 +725,18 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
     }
 
     private int headerH(SpellNode node) {
-        return Math.max(NODE_H, 24 + Math.max(node.inputCount(), node.outputCount()) * 14);
+        return Math.max(NODE_H, 24 + Math.max(node.getInputCount(), node.getOutputCount()) * 14);
     }
 
     private int nodeH(SpellNode node) {
-        return headerH(node) + node.type().parameters().size() * PARAM_ROW_H;
+        return headerH(node) + node.getType().parameters().size() * PARAM_ROW_H;
     }
 
     private boolean inputConnected(SpellNode node, int port) {
         for (SpellNode n : graph.nodes()) {
-            for (List<SpellNode.Connection> list : n.allOutputs()) {
-                for (SpellNode.Connection c : list) {
-                    if (c.targetId.equals(node.id()) && c.targetInputPort == port) {
+            for (int i = 0; i < n.getOutputCount(); i++) {
+                for (SpellNode.Connection c : n.getConnections(i)) {
+                    if (c.targetId.equals(node.getUuid()) && c.targetPort == port) {
                         return true;
                     }
                 }
@@ -742,6 +759,8 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         return lines;
     }
 
+    // ==================== 悬停提示 ====================
+
     private void renderHoverTooltips(GuiGraphics g, int left, int top, int mx, int my) {
         if (dragNode != null) {
             return;
@@ -756,9 +775,9 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
             int wy = (int) worldY(my);
             UUID id = nodeAt(wx, wy);
             if (id != null) {
-                SpellNode node = graph.node(id);
+                SpellNode node = graph.getNode(id);
                 if (node != null) {
-                    g.renderTooltip(font, nodeTooltip(node.type(), node.manaCost()), Optional.empty(), mx, my);
+                    g.renderTooltip(font, nodeTooltip(node.getType(), node.getManaCost()), Optional.empty(), mx, my);
                     return;
                 }
             }
@@ -900,6 +919,8 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         PacketDistributor.sendToServer(new ModNetwork.PrayPacket(editMaxMana, editRegenX100, editCooldown));
     }
 
+    // ==================== 组装点击 ====================
+
     private boolean mouseClickedAssemble(double mx, double my, int button, int left, int top) {
         int cLeft = canvasLeft();
         int cTop = canvasTop();
@@ -933,7 +954,7 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         int wy = (int) worldY(my);
 
         if (button == 2) {
-            return true; 
+            return true;
         }
         if (button == 1) {
             return rightClickCanvas(mx, my, cLeft, cTop, wx, wy);
@@ -941,7 +962,7 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
 
         UUID outNode = outputPortAt(mx, my, cLeft, cTop);
         if (outNode != null) {
-            SpellNode node = graph.node(outNode);
+            SpellNode node = graph.getNode(outNode);
             pendingSource = outNode;
             pendingOutPort = findOutputPort(mx, my, cLeft, cTop, node);
             return true;
@@ -949,7 +970,7 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         UUID inNode = inputPortAt(mx, my, cLeft, cTop);
         if (inNode != null) {
             if (pendingSource != null) {
-                SpellNode node = graph.node(inNode);
+                SpellNode node = graph.getNode(inNode);
                 int port = findInputPort(mx, my, cLeft, cTop, node);
                 if (!graph.connect(pendingSource, pendingOutPort, inNode, port)) {
 
@@ -963,18 +984,18 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         }
         UUID paramNode = paramAreaNode(wx, wy);
         if (paramNode != null) {
-            SpellNode node = graph.node(paramNode);
+            SpellNode node = graph.getNode(paramNode);
             if (node != null) {
-                clickParam(node, wx - (int) node.x(), wy - (int) node.y());
+                clickParam(node, wx - (int) getNodeX(node), wy - (int) getNodeY(node));
             }
             return true;
         }
         UUID body = nodeAt(wx, wy);
         if (body != null) {
             dragNode = body;
-            SpellNode node = graph.node(body);
-            dragOffsetX = wx - (int) node.x();
-            dragOffsetY = wy - (int) node.y();
+            SpellNode node = graph.getNode(body);
+            dragOffsetX = wx - (int) getNodeX(node);
+            dragOffsetY = wy - (int) getNodeY(node);
             return true;
         }
         if (selectedType != null) {
@@ -1002,6 +1023,8 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         return true;
     }
 
+    // ==================== 右键画布 ====================
+
     private boolean rightClickCanvas(double mx, double my, int cLeft, int cTop, int wx, int wy) {
 
         if (paramAreaNode(wx, wy) != null) {
@@ -1010,7 +1033,7 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
 
         UUID inNode = inputPortAt(mx, my, cLeft, cTop);
         if (inNode != null) {
-            SpellNode node = graph.node(inNode);
+            SpellNode node = graph.getNode(inNode);
             int port = findInputPort(mx, my, cLeft, cTop, node);
             graph.disconnectInput(inNode, port);
             clearPending();
@@ -1020,7 +1043,7 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
 
         UUID outNode = outputPortAt(mx, my, cLeft, cTop);
         if (outNode != null) {
-            SpellNode node = graph.node(outNode);
+            SpellNode node = graph.getNode(outNode);
             int port = findOutputPort(mx, my, cLeft, cTop, node);
             graph.disconnectOutput(outNode, port);
             clearPending();
@@ -1031,14 +1054,14 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         UUID body = nodeAt(wx, wy);
         if (body != null) {
             if (!graph.isStart(body)) {
-                SpellNode removed = graph.node(body);
+                SpellNode removed = graph.getNode(body);
                 if (removed != null) {
                     graph.removeNode(body);
                     dirty = true;
                     if (minecraft != null && minecraft.player != null && !minecraft.player.getAbilities().instabuild) {
-                        knownCounts.merge(removed.type().icon().getItem(), 1, Integer::sum);
+                        knownCounts.merge(removed.getType().icon().getItem(), 1, Integer::sum);
                     }
-                    PacketDistributor.sendToServer(new ModNetwork.RemoveNodePacket(removed.type().id()));
+                    PacketDistributor.sendToServer(new ModNetwork.RemoveNodePacket(removed.getType().id()));
                 }
             }
             clearPending();
@@ -1048,26 +1071,31 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         return true;
     }
 
+    // ==================== 节点检测 ====================
+
     private UUID paramAreaNode(int wx, int wy) {
         for (SpellNode node : topDownNodes()) {
-            if (node.type().parameters().isEmpty()) {
+            if (node == null) continue;
+            if (node.getType().parameters().isEmpty()) {
                 continue;
             }
-            if (wx >= node.x() && wx <= node.x() + NODE_W
-                    && wy >= node.y() + headerH(node) && wy <= node.y() + nodeH(node)) {
-                return node.id();
+            float x = getNodeX(node);
+            float y = getNodeY(node);
+            if (wx >= x && wx <= x + NODE_W
+                    && wy >= y + headerH(node) && wy <= y + nodeH(node)) {
+                return node.getUuid();
             }
         }
         return null;
     }
 
     private void clickParam(SpellNode node, int relX, int relY) {
-        if (node.type().id().getPath().equals("condition")) {
+        if (node.getType().id().getPath().equals("condition")) {
             clickConditionParam(node, relX, relY);
             return;
         }
         int idx = (relY - headerH(node)) / PARAM_ROW_H;
-        List<NodeParameter> ps = node.type().parameters();
+        List<NodeParameter> ps = node.getType().parameters();
         if (idx < 0 || idx >= ps.size()) {
             return;
         }
@@ -1082,8 +1110,8 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
                 } else if (relX >= 85) {
                     cur = cur + step;
                 } else {
-                    int nx = screenX(node.x());
-                    int ny = screenY(node.y());
+                    int nx = screenX(getNodeX(node));
+                    int ny = screenY(getNodeY(node));
                     int py = ny + scaled(headerH(node) + idx * PARAM_ROW_H);
                     openParamInput(node, p, nx + scaled(57), py, scaled(28), scaled(PARAM_ROW_H));
                     return;
@@ -1099,8 +1127,8 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
                 } else if (relX >= 85) {
                     cur = cur + step;
                 } else {
-                    int nx = screenX(node.x());
-                    int ny = screenY(node.y());
+                    int nx = screenX(getNodeX(node));
+                    int ny = screenY(getNodeY(node));
                     int py = ny + scaled(headerH(node) + idx * PARAM_ROW_H);
                     openParamInput(node, p, nx + scaled(57), py, scaled(28), scaled(PARAM_ROW_H));
                     return;
@@ -1111,6 +1139,8 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         }
         dirty = true;
     }
+
+    // ==================== 输入框 ====================
 
     private void openAttrInput(AttributeKind kind, int x, int y) {
         commitValueInput();
@@ -1157,7 +1187,7 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
             try {
                 if (inputParam.kind() == NodeParameter.Kind.INT) {
                     int v = clampInt(Integer.parseInt(text), (int) inputParam.min(), (int) inputParam.max());
-                    if (inputNode.type().id().getPath().equals("condition")) {
+                    if (inputNode.getType().id().getPath().equals("condition")) {
                         if (inputParam.key().equals("min")) {
                             v = Math.min(v, inputNode.paramInt("max"));
                         } else if (inputParam.key().equals("max")) {
@@ -1197,19 +1227,19 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         if (idx != 0) {
             return;
         }
-        List<NodeParameter> ps = node.type().parameters();
+        List<NodeParameter> ps = node.getType().parameters();
         int paramIndex;
         int inputX;
         if (relX >= 48 && relX <= 71) {
             paramIndex = 0;
-            inputX = screenX(node.x()) + scaled(48);
+            inputX = screenX(getNodeX(node)) + scaled(48);
         } else if (relX >= 72 && relX <= 96) {
             paramIndex = 1;
-            inputX = screenX(node.x()) + scaled(72);
+            inputX = screenX(getNodeX(node)) + scaled(72);
         } else {
             return;
         }
-        int py = screenY(node.y()) + scaled(headerH(node));
+        int py = screenY(getNodeY(node)) + scaled(headerH(node));
         openParamInput(node, ps.get(paramIndex), inputX, py,
                 scaled(24), scaled(PARAM_ROW_H));
     }
@@ -1384,10 +1414,15 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         return list;
     }
 
+    // ==================== 节点定位 ====================
+    // 关键：使用 node.getUuid()
+
     private UUID nodeAt(int wx, int wy) {
         for (SpellNode node : topDownNodes()) {
-            if (wx >= node.x() && wx <= node.x() + NODE_W && wy >= node.y() && wy <= node.y() + nodeH(node)) {
-                return node.id();
+            float x = getNodeX(node);
+            float y = getNodeY(node);
+            if (wx >= x && wx <= x + NODE_W && wy >= y && wy <= y + nodeH(node)) {
+                return node.getUuid();
             }
         }
         return null;
@@ -1395,13 +1430,13 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
 
     private UUID outputPortAt(double mx, double my, int cLeft, int cTop) {
         for (SpellNode node : topDownNodes()) {
-            int nx = screenX(node.x());
-            int ny = screenY(node.y());
+            int nx = screenX(getNodeX(node));
+            int ny = screenY(getNodeY(node));
             int nw = scaled(NODE_W);
-            for (int o = 0; o < node.outputCount(); o++) {
+            for (int o = 0; o < node.getOutputCount(); o++) {
                 int py = ny + scaled(portY(node, o, false));
                 if (inRect(mx, my, nx + nw - 5, py - 2, 10, 10)) {
-                    return node.id();
+                    return node.getUuid();
                 }
             }
         }
@@ -1410,12 +1445,12 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
 
     private UUID inputPortAt(double mx, double my, int cLeft, int cTop) {
         for (SpellNode node : topDownNodes()) {
-            int nx = screenX(node.x());
-            int ny = screenY(node.y());
-            for (int i = 0; i < node.inputCount(); i++) {
+            int nx = screenX(getNodeX(node));
+            int ny = screenY(getNodeY(node));
+            for (int i = 0; i < node.getInputCount(); i++) {
                 int py = ny + scaled(portY(node, i, true));
                 if (inRect(mx, my, nx - 5, py - 2, 10, 10)) {
-                    return node.id();
+                    return node.getUuid();
                 }
             }
         }
@@ -1423,10 +1458,10 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
     }
 
     private int findOutputPort(double mx, double my, int cLeft, int cTop, SpellNode node) {
-        int nx = screenX(node.x());
-        int ny = screenY(node.y());
+        int nx = screenX(getNodeX(node));
+        int ny = screenY(getNodeY(node));
         int nw = scaled(NODE_W);
-        for (int o = 0; o < node.outputCount(); o++) {
+        for (int o = 0; o < node.getOutputCount(); o++) {
             int py = ny + scaled(portY(node, o, false));
             if (inRect(mx, my, nx + nw - 5, py - 2, 10, 10)) {
                 return o;
@@ -1436,9 +1471,9 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
     }
 
     private int findInputPort(double mx, double my, int cLeft, int cTop, SpellNode node) {
-        int nx = screenX(node.x());
-        int ny = screenY(node.y());
-        for (int i = 0; i < node.inputCount(); i++) {
+        int nx = screenX(getNodeX(node));
+        int ny = screenY(getNodeY(node));
+        for (int i = 0; i < node.getInputCount(); i++) {
             int py = ny + scaled(portY(node, i, true));
             if (inRect(mx, my, nx - 5, py - 2, 10, 10)) {
                 return i;
@@ -1447,15 +1482,17 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
         return 0;
     }
 
+    // ==================== 拖拽和滚动 ====================
+
     @Override
     public boolean mouseDragged(double mx, double my, int button, double dragX, double dragY) {
         if (tab == TAB_ASSEMBLE) {
             if (button == 0 && dragNode != null) {
                 float wx = worldX(mx);
                 float wy = worldY(my);
-                SpellNode node = graph.node(dragNode);
+                SpellNode node = graph.getNode(dragNode);
                 if (node != null) {
-                    node.setPosition(wx - dragOffsetX, wy - dragOffsetY);
+                    setNodePosition(node, wx - dragOffsetX, wy - dragOffsetY);
                     dirty = true;
                 }
                 return true;

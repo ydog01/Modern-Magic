@@ -1,47 +1,85 @@
 package top.ydog01.mmagic.spell.node;
 
-import net.minecraft.world.entity.Entity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.ExplosionDamageCalculator;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.AABB;
+import top.ydog01.mmagic.spell.ExecutionResult;
 import top.ydog01.mmagic.spell.SpellContext;
-import top.ydog01.mmagic.spell.SpellModifiers;
 import top.ydog01.mmagic.spell.SpellNode;
-
-import java.util.List;
+import top.ydog01.mmagic.spell.SpellRegistry;
 
 public class ExplosionNode extends SpellNode {
+    public static final String ID = "explosion";
+    
+    private boolean executed = false;
+    
+    public ExplosionNode() {
+        super(ID, SpellRegistry.get(ID));
+    }
+    
     @Override
-    public List<Integer> execute(SpellContext ctx, Vec3 at, Vec3 vel, float damageMult, float speedMult, SpellModifiers mods) {
-
+    public ExecutionResult execute(SpellContext ctx) {
+        return ExecutionResult.empty();
+    }
+    
+    @Override
+    public ExecutionResult tick(SpellContext ctx) {
+        if (executed) {
+            return ExecutionResult.continueTo(0);
+        }
+        
+        if (!(ctx.level() instanceof ServerLevel level)) {
+            return ExecutionResult.empty();
+        }
+        
         float radius = paramFloat("radius");
-        float damage = paramFloat("damage") * damageMult;
-        boolean terrain = paramBool("destroy_terrain");
-        Level.ExplosionInteraction interaction =
-                terrain ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE;
-        ctx.level().explode(ctx.caster(),
-                ctx.caster().damageSources().explosion(ctx.caster(), ctx.caster()),
-                new FixedDamageCalculator(damage),
-                at.x, at.y, at.z, radius, false, interaction);
-        return null;
+        float damage = paramFloat("damage");
+        boolean destroyTerrain = paramBool("destroy_terrain");
+        
+        Vec3 pos = ctx.getCurrentPosition();
+        
+        for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, 
+                new AABB(pos, pos).inflate(radius))) {
+            if (entity != ctx.caster()) {
+                double distance = entity.distanceToSqr(pos);
+                if (distance < radius * radius) {
+                    float damageAmount = damage * (1 - (float)Math.sqrt(distance) / radius);
+                    entity.hurt(entity.damageSources().explosion(null, ctx.caster()), damageAmount);
+                }
+            }
+        }
+        
+        Explosion explosion = new Explosion(
+            level, 
+            ctx.caster(), 
+            pos.x, pos.y, pos.z, 
+            radius, 
+            false,
+            destroyTerrain ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP
+        );
+        explosion.explode();
+        explosion.finalizeExplosion(false);
+        
+        executed = true;
+        return ExecutionResult.continueTo(0);
     }
-
+    
     @Override
-    public boolean keepVelocity() {
-        return false;
-    }
-
-    private static final class FixedDamageCalculator extends ExplosionDamageCalculator {
-        private final float damage;
-
-        FixedDamageCalculator(float damage) {
-            this.damage = damage;
+    public int getManaCost() {
+        int base = super.getManaCost();
+        float radius = paramFloat("radius");
+        float damage = paramFloat("damage");
+        boolean destroyTerrain = paramBool("destroy_terrain");
+        
+        int extra = 0;
+        extra += Math.round(radius * 0.5f);
+        extra += Math.round(damage * 0.2f);
+        if (destroyTerrain) {
+            extra += 2;
         }
-
-        @Override
-        public float getEntityDamageAmount(Explosion explosion, Entity entity) {
-            return damage;
-        }
+        
+        return base + extra;
     }
 }

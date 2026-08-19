@@ -32,3 +32,8 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
+
+get.py
+create.py
+directory_contents.txt
+build-errors.log 
