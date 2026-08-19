@@ -1,3 +1,4 @@
+// SpellScheduler.java
 package top.ydog01.mmagic.spell;
 
 import net.neoforged.bus.api.SubscribeEvent;
@@ -14,8 +15,14 @@ import java.util.List;
 public final class SpellScheduler {
     private static final Deque<Runnable> QUEUE = new ArrayDeque<>();
     private static final List<Task> DELAYED = new ArrayList<>();
+    
+    private static ActiveSpellManager manager;
 
     private SpellScheduler() {}
+
+    public static void setManager(ActiveSpellManager m) {
+        manager = m;
+    }
 
     public static void schedule(int delayTicks, Runnable action) {
         if (delayTicks <= 0) {
@@ -27,6 +34,10 @@ public final class SpellScheduler {
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
+        if (manager != null) {
+            manager.tick();
+        }
+        
         for (Iterator<Task> it = DELAYED.iterator(); it.hasNext(); ) {
             Task task = it.next();
             if (--task.remaining <= 0) {

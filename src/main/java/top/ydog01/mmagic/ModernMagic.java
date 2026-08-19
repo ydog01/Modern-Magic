@@ -12,6 +12,9 @@ import top.ydog01.mmagic.init.ModLootModifiers;
 import top.ydog01.mmagic.init.ModMenuTypes;
 import top.ydog01.mmagic.init.ModSpellNodes;
 import top.ydog01.mmagic.init.ModStructures;
+import top.ydog01.mmagic.spell.ActiveSpellManager;
+import top.ydog01.mmagic.spell.SpellRunner;
+import top.ydog01.mmagic.spell.SpellScheduler;
 
 @Mod(ModernMagic.MODID)
 public class ModernMagic {
@@ -28,5 +31,8 @@ public class ModernMagic {
         ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ModLootModifiers.GLOBAL_LOOT_MODIFIERS.register(modEventBus);
         ModSpellNodes.register();
+        ActiveSpellManager manager = new ActiveSpellManager();
+        SpellRunner.setManager(manager);
+        SpellScheduler.setManager(manager);
     }
 }
