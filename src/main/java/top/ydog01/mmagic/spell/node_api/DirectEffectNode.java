@@ -12,9 +12,4 @@ public abstract class DirectEffectNode extends SpellNode {
     
     @Override
     public abstract ExecutionResult execute(SpellContext ctx);
-    
-    @Override
-    public SpellNode tryModify(SpellNode target, SpellContext ctx) {
-        return target;
-    }
 }

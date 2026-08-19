@@ -45,9 +45,4 @@ public abstract class ProjectileNode extends SpellNode {
     public ExecutionResult execute(SpellContext ctx) {
         return ExecutionResult.continueTo(0);
     }
-    
-    @Override
-    public SpellNode tryModify(SpellNode target, SpellContext ctx) {
-        return target;
-    }
 }
