@@ -6,6 +6,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 
 import java.util.*;
 

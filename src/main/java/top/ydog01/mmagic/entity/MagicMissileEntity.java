@@ -14,8 +14,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import top.ydog01.mmagic.spell.SpellNode;
-import top.ydog01.mmagic.spell.SpellRunner;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
+import top.ydog01.mmagic.spell.casting.SpellRunner;
 
 import java.util.ArrayList;
 import java.util.List;

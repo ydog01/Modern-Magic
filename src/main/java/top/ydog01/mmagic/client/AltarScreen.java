@@ -19,7 +19,7 @@ import top.ydog01.mmagic.menu.AltarMenu;
 import top.ydog01.mmagic.network.ModNetwork;
 import top.ydog01.mmagic.spell.NodeParameter;
 import top.ydog01.mmagic.spell.SpellGraph;
-import top.ydog01.mmagic.spell.SpellNode;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.SpellNodeType;
 import top.ydog01.mmagic.spell.SpellRegistry;
 import top.ydog01.mmagic.util.SpellCost;
@@ -89,7 +89,7 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
     }
 
     // ==================== 节点位置辅助 ====================
-    // 关键：使用 node.getUuid()，现在它返回的是传入的 nodeId
+    // 关键：使用 node_implementations.getUuid()，现在它返回的是传入的 nodeId
 
     private float getNodeX(SpellNode node) {
         Vec2 pos = graph.getMenuPosition(node.getUuid());
@@ -1415,7 +1415,7 @@ public class AltarScreen extends Screen implements MenuAccess<AltarMenu> {
     }
 
     // ==================== 节点定位 ====================
-    // 关键：使用 node.getUuid()
+    // 关键：使用 node_implementations.getUuid()
 
     private UUID nodeAt(int wx, int wy) {
         for (SpellNode node : topDownNodes()) {

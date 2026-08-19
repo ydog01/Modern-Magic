@@ -8,8 +8,8 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import top.ydog01.mmagic.ModernMagic;
 import top.ydog01.mmagic.spell.NodeParameter;
 import top.ydog01.mmagic.spell.SpellRegistry;
-import top.ydog01.mmagic.spell.SpellNode;
-import top.ydog01.mmagic.spell.node.*;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
+import top.ydog01.mmagic.spell.node_implementations.*;
 import java.util.List;
 import java.util.function.Supplier;
 

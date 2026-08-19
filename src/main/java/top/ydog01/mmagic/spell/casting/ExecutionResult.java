@@ -1,4 +1,4 @@
-package top.ydog01.mmagic.spell;
+package top.ydog01.mmagic.spell.casting;
 
 import java.util.ArrayList;
 import java.util.List;

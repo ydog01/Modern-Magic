@@ -1,9 +1,10 @@
-package top.ydog01.mmagic.spell.node;
+package top.ydog01.mmagic.spell.node_implementations;
 
-import top.ydog01.mmagic.spell.ControlNode;
-import top.ydog01.mmagic.spell.ExecutionResult;
+import top.ydog01.mmagic.spell.casting.ExecutionResult;
 import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.SpellRegistry;
+import top.ydog01.mmagic.spell.node_api.ControlNode;
+
 import java.util.ArrayList;
 import java.util.List;
 

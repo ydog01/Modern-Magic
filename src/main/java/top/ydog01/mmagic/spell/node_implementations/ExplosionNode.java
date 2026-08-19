@@ -1,13 +1,13 @@
-package top.ydog01.mmagic.spell.node;
+package top.ydog01.mmagic.spell.node_implementations;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.AABB;
-import top.ydog01.mmagic.spell.ExecutionResult;
+import top.ydog01.mmagic.spell.casting.ExecutionResult;
 import top.ydog01.mmagic.spell.SpellContext;
-import top.ydog01.mmagic.spell.SpellNode;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.SpellRegistry;
 
 public class ExplosionNode extends SpellNode {

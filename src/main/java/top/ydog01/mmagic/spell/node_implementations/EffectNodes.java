@@ -1,4 +1,4 @@
-package top.ydog01.mmagic.spell.node;
+package top.ydog01.mmagic.spell.node_implementations;
 
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
@@ -6,10 +6,10 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.resources.ResourceLocation;
-import top.ydog01.mmagic.spell.ExecutionResult;
+import top.ydog01.mmagic.spell.casting.ExecutionResult;
 import top.ydog01.mmagic.spell.SpellContext;
-import top.ydog01.mmagic.spell.SpellNode;
-import top.ydog01.mmagic.spell.SpellScheduler;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
+import top.ydog01.mmagic.spell.casting.SpellScheduler;
 import top.ydog01.mmagic.spell.SpellRegistry;
 import top.ydog01.mmagic.spell.SpellNodeType;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;

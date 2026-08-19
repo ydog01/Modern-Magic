@@ -12,7 +12,7 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import top.ydog01.mmagic.spell.SpellRunner;
+import top.ydog01.mmagic.spell.casting.SpellRunner;
 import top.ydog01.mmagic.util.WandData;
 
 import java.util.List;

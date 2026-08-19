@@ -1,4 +1,4 @@
-package top.ydog01.mmagic.spell;
+package top.ydog01.mmagic.spell.casting;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -7,6 +7,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import top.ydog01.mmagic.item.WandItem;
+import top.ydog01.mmagic.spell.SpellContext;
+import top.ydog01.mmagic.spell.SpellGraph;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.util.WandData;
 
 import java.util.*;

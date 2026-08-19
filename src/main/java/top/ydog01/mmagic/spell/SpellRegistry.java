@@ -3,6 +3,7 @@ import java.util.function.Supplier;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 
 import java.util.*;
 

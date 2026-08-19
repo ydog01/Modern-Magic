@@ -12,9 +12,9 @@ import top.ydog01.mmagic.init.ModLootModifiers;
 import top.ydog01.mmagic.init.ModMenuTypes;
 import top.ydog01.mmagic.init.ModSpellNodes;
 import top.ydog01.mmagic.init.ModStructures;
-import top.ydog01.mmagic.spell.ActiveSpellManager;
-import top.ydog01.mmagic.spell.SpellRunner;
-import top.ydog01.mmagic.spell.SpellScheduler;
+import top.ydog01.mmagic.spell.casting.ActiveSpellManager;
+import top.ydog01.mmagic.spell.casting.SpellRunner;
+import top.ydog01.mmagic.spell.casting.SpellScheduler;
 
 @Mod(ModernMagic.MODID)
 public class ModernMagic {

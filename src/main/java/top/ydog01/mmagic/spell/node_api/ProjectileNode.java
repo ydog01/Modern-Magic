@@ -1,6 +1,9 @@
-package top.ydog01.mmagic.spell;
+package top.ydog01.mmagic.spell.node_api;
 
 import net.minecraft.resources.ResourceLocation;
+import top.ydog01.mmagic.spell.casting.ExecutionResult;
+import top.ydog01.mmagic.spell.SpellContext;
+import top.ydog01.mmagic.spell.SpellNodeType;
 
 public abstract class ProjectileNode extends SpellNode {
     
