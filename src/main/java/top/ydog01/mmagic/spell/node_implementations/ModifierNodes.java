@@ -1,4 +1,4 @@
-package top.ydog01.mmagic.spell.node;
+package top.ydog01.mmagic.spell.node_implementations;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,11 +14,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import top.ydog01.mmagic.spell.ExecutionResult;
-import top.ydog01.mmagic.spell.ModifierNode;
-import top.ydog01.mmagic.spell.ProjectileNode;
+import top.ydog01.mmagic.spell.casting.ExecutionResult;
+import top.ydog01.mmagic.spell.node_api.ModifierNode;
+import top.ydog01.mmagic.spell.node_api.ProjectileNode;
 import top.ydog01.mmagic.spell.SpellContext;
-import top.ydog01.mmagic.spell.SpellNode;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.SpellNodeType;
 import top.ydog01.mmagic.spell.SpellRegistry;
 import java.util.*;

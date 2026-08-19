@@ -3,6 +3,7 @@ package top.ydog01.mmagic.spell;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 
 import java.util.List;
 import java.util.UUID;

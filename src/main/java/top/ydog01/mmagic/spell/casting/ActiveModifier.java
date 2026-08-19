@@ -1,4 +1,8 @@
-package top.ydog01.mmagic.spell;
+package top.ydog01.mmagic.spell.casting;
+
+import top.ydog01.mmagic.spell.SpellContext;
+import top.ydog01.mmagic.spell.node_api.ModifierNode;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 
 public class ActiveModifier implements ActiveNode {
     

@@ -1,4 +1,8 @@
-package top.ydog01.mmagic.spell;
+package top.ydog01.mmagic.spell.node_api;
+
+import top.ydog01.mmagic.spell.casting.ExecutionResult;
+import top.ydog01.mmagic.spell.SpellContext;
+import top.ydog01.mmagic.spell.SpellNodeType;
 
 public abstract class ControlNode extends SpellNode {
     
@@ -8,9 +12,4 @@ public abstract class ControlNode extends SpellNode {
     
     @Override
     public abstract ExecutionResult execute(SpellContext ctx);
-    
-    @Override
-    public SpellNode tryModify(SpellNode target, SpellContext ctx) {
-        return target;
-    }
 }

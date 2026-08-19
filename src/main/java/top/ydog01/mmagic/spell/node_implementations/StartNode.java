@@ -1,8 +1,8 @@
-package top.ydog01.mmagic.spell.node;
+package top.ydog01.mmagic.spell.node_implementations;
 
-import top.ydog01.mmagic.spell.ExecutionResult;
+import top.ydog01.mmagic.spell.casting.ExecutionResult;
 import top.ydog01.mmagic.spell.SpellContext;
-import top.ydog01.mmagic.spell.SpellNode;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.SpellRegistry;
 
 public class StartNode extends SpellNode {

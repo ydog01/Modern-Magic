@@ -34,10 +34,10 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import top.ydog01.mmagic.init.ModItems;
 import top.ydog01.mmagic.spell.SpellGraph;
-import top.ydog01.mmagic.spell.SpellNode;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.SpellNodeType;
 import top.ydog01.mmagic.spell.SpellRegistry;
-import top.ydog01.mmagic.spell.SpellRunner;
+import top.ydog01.mmagic.spell.casting.SpellRunner;
 import top.ydog01.mmagic.util.WandData;
 
 import java.util.ArrayList;

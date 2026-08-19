@@ -1,15 +1,14 @@
-package top.ydog01.mmagic.spell.node;
+package top.ydog01.mmagic.spell.node_implementations;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
 import top.ydog01.mmagic.entity.MagicMissileEntity;
 import top.ydog01.mmagic.init.ModEntityTypes;
-import top.ydog01.mmagic.spell.ExecutionResult;
+import top.ydog01.mmagic.spell.casting.ExecutionResult;
 import top.ydog01.mmagic.spell.SpellContext;
-import top.ydog01.mmagic.spell.SpellNode;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.SpellRegistry;
 
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ public class TriggerMissileNode extends SpellNode {
     @Override
     public ExecutionResult onCollideEntity(Entity entity, SpellContext ctx) {
         if (entity instanceof LivingEntity living) {
-            float damage = paramFloat("damage") * ctx.getDamageMult();
+            float damage = paramFloat("damage");
             living.hurt(living.damageSources().magic(), damage);
             if (missile != null && !missile.isRemoved()) {
                 missile.discard();

@@ -1,4 +1,4 @@
-package top.ydog01.mmagic.spell;
+package top.ydog01.mmagic.spell.casting;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -7,6 +7,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import top.ydog01.mmagic.item.WandItem;
+import top.ydog01.mmagic.spell.SpellContext;
+import top.ydog01.mmagic.spell.SpellGraph;
+import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.util.WandData;
 
 import java.util.*;
@@ -34,8 +37,7 @@ public final class ActiveSpellManager {
     
     public void continueFrom(ServerLevel level, UUID casterId, UUID wandId,
                              List<SpellNode.Connection> connections,
-                             Vec3 at, Vec3 vel, float damageMult, float speedMult,
-                             SpellModifiers mods) {
+                             Vec3 at, Vec3 vel) {
         if (connections.isEmpty()) return;
         
         LivingEntity caster = (LivingEntity) level.getEntity(casterId);
@@ -53,9 +55,6 @@ public final class ActiveSpellManager {
         SpellContext context = new SpellContext(level, caster, wand);
         context.setCurrentPosition(at);
         context.setCurrentVelocity(vel);
-        context.setDamageMult(damageMult);
-        context.setSpeedMult(speedMult);
-        context.setModifiers(mods);
         
         ActiveSpell spell = new ActiveSpell(this, context, graph);
         SpellNode target = graph.getNode(connections.get(0).targetId);

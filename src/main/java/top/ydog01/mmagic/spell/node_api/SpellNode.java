@@ -1,9 +1,12 @@
-package top.ydog01.mmagic.spell;
+package top.ydog01.mmagic.spell.node_api;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import top.ydog01.mmagic.spell.casting.ExecutionResult;
+import top.ydog01.mmagic.spell.SpellContext;
+import top.ydog01.mmagic.spell.SpellNodeType;
 
 import java.util.*;
 
