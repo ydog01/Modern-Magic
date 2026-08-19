@@ -1,4 +1,3 @@
-// SpellScheduler.java
 package top.ydog01.mmagic.spell;
 
 import net.neoforged.bus.api.SubscribeEvent;
