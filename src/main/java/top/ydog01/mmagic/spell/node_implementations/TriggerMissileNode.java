@@ -49,6 +49,7 @@ public class TriggerMissileNode extends SpellNode {
             float speed = paramFloat("speed");
 
             missile.setDamage(damage);
+            missile.applyHarvestModifiers(ctx);
             missile.setPos(ctx.getCurrentPosition());
             missile.setDeltaMovement(ctx.getCurrentVelocity().scale(speed));
 

@@ -43,8 +43,8 @@ public final class ModItems {
             "regen", "night_vision", "jump_boost", "slow_fall", "water_breath", "absorption",
             "lightning", "teleport", "knockback_pulse", "pull_pulse", "freeze_pulse",
             "area_damage", "fire_nova", "launch", "multi_cast", "random_cast",
-            "loop", "condition", "terminate", "terminate_all", "rotate", "direction", "speed_return", "set_speed", "decelerate", "wait",
-            "stabilize", "amplifier", "accelerator", "echo", "offset_up", "offset_forward"
+            "loop", "condition", "terminate", "terminate_all", "rotate", "direction", "set_speed", "decelerate", "wait",
+            "amplifier", "accelerator", "echo", "offset_up", "offset_forward"
     );
 
     public static final Map<String, DeferredItem<Item>> EXTRA_NODES = new LinkedHashMap<>();

@@ -5,16 +5,11 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.resources.ResourceLocation;
 import top.ydog01.mmagic.spell.casting.ExecutionResult;
 import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.node_api.SpellNode;
-import top.ydog01.mmagic.spell.casting.SpellScheduler;
 import top.ydog01.mmagic.spell.SpellRegistry;
 import top.ydog01.mmagic.spell.SpellNodeType;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 public final class EffectNodes {
     private EffectNodes() {}
@@ -111,48 +106,6 @@ public final class EffectNodes {
         @Override
         protected Holder<MobEffect> getEffect() {
             return MobEffects.ABSORPTION;
-        }
-    }
-
-    public static class StabilizeNode extends SpellNode {
-        public static final String ID = "stabilize";
-        private static final ResourceLocation MOD_ID = ResourceLocation.fromNamespaceAndPath("modern_magic", "stabilize");
-        private boolean executed = false;
-
-        public StabilizeNode() {
-            super(ID, SpellRegistry.get(ID));
-        }
-
-        @Override
-        public ExecutionResult execute(SpellContext ctx) {
-            return ExecutionResult.empty();
-        }
-
-        @Override
-        public ExecutionResult tick(SpellContext ctx) {
-            if (executed) {
-                return ExecutionResult.continueTo(0);
-            }
-
-            LivingEntity caster = ctx.caster();
-            AttributeInstance inst = caster.getAttribute(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE);
-            if (inst != null) {
-                inst.removeModifier(MOD_ID);
-                inst.addTransientModifier(new AttributeModifier(MOD_ID, 1.0, AttributeModifier.Operation.ADD_VALUE));
-                int duration = Math.max(20, paramInt("duration"));
-                SpellScheduler.schedule(duration, () -> {
-                    AttributeInstance i = caster.getAttribute(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE);
-                    if (i != null) i.removeModifier(MOD_ID);
-                });
-            }
-
-            executed = true;
-            return ExecutionResult.continueTo(0);
-        }
-
-        @Override
-        public int getManaCost() {
-            return super.getManaCost() + paramInt("duration") / 40;
         }
     }
 }

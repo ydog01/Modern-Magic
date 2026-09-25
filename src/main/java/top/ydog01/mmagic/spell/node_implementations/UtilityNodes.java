@@ -1,6 +1,8 @@
 package top.ydog01.mmagic.spell.node_implementations;
 
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
@@ -86,7 +88,12 @@ public final class UtilityNodes {
             if (executed) {
                 return ExecutionResult.continueTo(0);
             }
-            ctx.caster().setDeltaMovement(ctx.caster().getDeltaMovement().add(0, 0.9, 0));
+            LivingEntity caster = ctx.caster();
+            caster.setDeltaMovement(caster.getDeltaMovement().add(0, 0.9, 0));
+            caster.hurtMarked = true;
+            if (caster instanceof ServerPlayer serverPlayer && serverPlayer.connection != null) {
+                serverPlayer.connection.send(new ClientboundSetEntityMotionPacket(serverPlayer));
+            }
             executed = true;
             return ExecutionResult.continueTo(0);
         }
@@ -117,7 +124,9 @@ public final class UtilityNodes {
                 double dz = e.getZ() - at.z;
                 double len = Math.sqrt(dx * dx + dz * dz);
                 if (len > 0.001) {
-                    e.knockback(1.4, dx / len, dz / len);
+                    // LivingEntity#knockback subtracts the supplied vector, so
+                    // invert it to push entities away from the pulse center.
+                    e.knockback(1.4, -dx / len, -dz / len);
                 }
             }
             executed = true;

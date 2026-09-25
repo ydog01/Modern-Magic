@@ -17,19 +17,16 @@ import java.util.*;
 public final class ActiveSpellManager {
     
     private final List<ActiveSpell> activeSpells = new ArrayList<>();
-    private final Map<UUID, SpellGraph> graphCache = new HashMap<>();
     
     public void castSpell(ServerPlayer player, ItemStack wand) {
-        UUID wandId = WandData.getWandId(wand);
-        SpellGraph graph = getOrCreateGraph(wandId, wand);
+        SpellGraph graph = WandData.getGraph(wand);
         SpellContext context = new SpellContext((ServerLevel) player.level(), player, wand);
         ActiveSpell spell = new ActiveSpell(this, context, graph);
         activeSpells.add(spell);
     }
     
     public void castSpell(LivingEntity caster, ItemStack wand) {
-        UUID wandId = WandData.getWandId(wand);
-        SpellGraph graph = getOrCreateGraph(wandId, wand);
+        SpellGraph graph = WandData.getGraph(wand);
         SpellContext context = new SpellContext((ServerLevel) caster.level(), caster, wand);
         ActiveSpell spell = new ActiveSpell(this, context, graph);
         activeSpells.add(spell);
@@ -46,41 +43,32 @@ public final class ActiveSpellManager {
         ItemStack wand = findWandById(caster, wandId);
         if (wand.isEmpty()) return;
         
-        SpellGraph graph = graphCache.get(wandId);
-        if (graph == null) {
-            graph = WandData.getGraph(wand);
-            graphCache.put(wandId, graph);
-        }
+        SpellGraph graph = WandData.getGraph(wand);
         
-        SpellContext context = new SpellContext(level, caster, wand);
-        context.setCurrentPosition(at);
-        context.setCurrentVelocity(vel);
-        
-        ActiveSpell spell = new ActiveSpell(this, context, graph);
-        SpellNode target = graph.getNode(connections.get(0).targetId);
-        if (target != null) {
+        for (SpellNode.Connection connection : connections) {
+            SpellNode target = graph.getNode(connection.targetId);
+            if (target == null) continue;
+
+            SpellContext context = new SpellContext(level, caster, wand);
+            context.setCurrentPosition(at);
+            context.setCurrentVelocity(vel);
+
+            ActiveSpell spell = new ActiveSpell(this, context, graph);
             spell.setCurrentNode(target);
+            activeSpells.add(spell);
         }
-        activeSpells.add(spell);
     }
     
     public void tick() {
-        for (ActiveSpell spell : activeSpells) {
-            UUID wandId = spell.getContext().wandId();
-            SpellGraph graph = graphCache.get(wandId);
-            if (graph == null) continue;
-            spell.update(graph);
+        // Snapshot to avoid ConcurrentModificationException when clone/multi-cast
+        // spells are appended by ActiveSpell while we are iterating.
+        List<ActiveSpell> snapshot = new ArrayList<>(activeSpells);
+        for (ActiveSpell spell : snapshot) {
+            spell.update(spell.getGraph());
         }
         activeSpells.removeIf(ActiveSpell::isStopped);
     }
     
-    private SpellGraph getOrCreateGraph(UUID wandId, ItemStack wand) {
-        return graphCache.computeIfAbsent(wandId, id -> {
-            SpellGraph graph = WandData.getGraph(wand);
-            graphCache.put(id, graph);
-            return graph;
-        });
-    }
     
     private ItemStack findWandById(LivingEntity living, UUID wandId) {
         if (living.getMainHandItem().getItem() instanceof WandItem

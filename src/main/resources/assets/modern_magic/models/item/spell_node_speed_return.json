@@ -1,6 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "modern_magic:item/spell_node_speed_return"
-  }
-}

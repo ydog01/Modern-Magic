@@ -74,17 +74,6 @@ public final class MotionNodes {
         @Override public int getManaCost() { return super.getManaCost() + (Math.abs(paramInt("yaw")) + Math.abs(paramInt("pitch"))) / 30; }
     }
 
-    public static class SpeedReturnNode extends ControlNode {
-        public static final String ID = "speed_return";
-        public SpeedReturnNode() { super(ID, SpellRegistry.get(ID)); }
-        
-        @Override public ExecutionResult execute(SpellContext ctx) { return ExecutionResult.empty(); }
-        
-        @Override public ExecutionResult tick(SpellContext ctx) { return ExecutionResult.continueTo(0); }
-        
-        @Override public Vec3 outputVelocity(Vec3 vel, SpellContext ctx) { return vel; }
-    }
-
     public static class SetSpeedNode extends ControlNode {
         public static final String ID = "set_speed";
         public SetSpeedNode() { super(ID, SpellRegistry.get(ID)); }

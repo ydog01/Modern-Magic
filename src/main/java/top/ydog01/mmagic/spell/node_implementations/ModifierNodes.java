@@ -216,22 +216,21 @@ public final class ModifierNodes {
 
     public static class HealModifierNode extends ElementModifierNode {
         public static final String ID = "heal_mod";
-        private static final float AMOUNT = 4.0f;
-        
-        public HealModifierNode() { 
-            super(ID, SpellRegistry.get(ID)); 
+
+        public HealModifierNode() {
+            super(ID, SpellRegistry.get(ID));
         }
-        
-        @Override 
+
+        @Override
         protected void applyEffect(net.minecraft.world.entity.Entity target, SpellContext ctx) {
             if (target instanceof LivingEntity living) {
-                living.heal(AMOUNT);
+                living.heal(paramInt("amount"));
             }
         }
-        
+
         @Override
         public int getManaCost() {
-            return super.getManaCost() + (int) AMOUNT;
+            return super.getManaCost() + paramInt("amount");
         }
     }
 

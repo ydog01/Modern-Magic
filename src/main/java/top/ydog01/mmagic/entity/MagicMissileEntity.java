@@ -14,6 +14,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import top.ydog01.mmagic.spell.SpellContext;
+import top.ydog01.mmagic.spell.SpellHarvest;
 import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.casting.SpellRunner;
 
@@ -33,6 +35,16 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
     private UUID ownerId = null;
     private UUID wandId = null;
     private List<SpellNode.Connection> continuation = List.of();
+    private boolean pickupEnabled = false;
+    private float pickupRadius = 4.0f;
+    private boolean digEnabled = false;
+    private float digRadius = 2.0f;
+    private int digLevel = 1;
+    private boolean digDrops = true;
+    private boolean chainDigEnabled = false;
+    private float chainDigRadius = 8.0f;
+    private int chainDigLevel = 1;
+    private boolean chainDigDrops = true;
     private long expireAt = -1;
     private final java.util.Set<Integer> hitEntities = new java.util.HashSet<>();
 
@@ -58,6 +70,19 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
 
     public void setDamage(float damage) {
         this.damage = damage;
+    }
+
+    public void applyHarvestModifiers(SpellContext ctx) {
+        this.pickupEnabled = ctx.isPickupEnabled();
+        this.pickupRadius = ctx.getPickupRadius();
+        this.digEnabled = ctx.isDigEnabled();
+        this.digRadius = ctx.getDigRadius();
+        this.digLevel = ctx.getDigLevel();
+        this.digDrops = ctx.isDigDrops();
+        this.chainDigEnabled = ctx.isChainDigEnabled();
+        this.chainDigRadius = ctx.getChainDigRadius();
+        this.chainDigLevel = ctx.getChainDigLevel();
+        this.chainDigDrops = ctx.isChainDigDrops();
     }
 
     public void setDelayed(boolean delayed, int flightTicks, UUID ownerId, UUID wandId, List<SpellNode.Connection> continuation) {
@@ -108,6 +133,12 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         if (target == getOwner() || !this.hitEntities.add(target.getId())) {
             return;
         }
+        if (target instanceof LivingEntity livingTarget) {
+            livingTarget.hurt(livingTarget.damageSources().indirectMagic(this, getOwner()), this.damage);
+        }
+        if (this.pickupEnabled && level() instanceof ServerLevel serverLevel && getOwner() instanceof LivingEntity owner) {
+            SpellHarvest.pickup(serverLevel, owner, result.getLocation(), this.pickupRadius);
+        }
         if (this.trigger) {
             continueSpell(result.getLocation().add(0.0, 2.0, 0.0), this.getDeltaMovement());
         }
@@ -118,6 +149,20 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
     protected void onHitBlock(BlockHitResult result) {
         if (level().isClientSide()) {
             return;
+        }
+        if (level() instanceof ServerLevel serverLevel && getOwner() instanceof LivingEntity owner) {
+            if (this.digEnabled) {
+                SpellHarvest.digArea(serverLevel, owner, result.getBlockPos(), this.digRadius,
+                        this.digLevel, this.digDrops, false, 0);
+            }
+            if (this.chainDigEnabled) {
+                SpellHarvest.chainDig(serverLevel, owner, result.getBlockPos(), this.chainDigRadius,
+                        this.chainDigLevel, this.chainDigDrops, false, 0);
+            }
+            // Run after digging so drops spawned by the harvest can be collected.
+            if (this.pickupEnabled) {
+                SpellHarvest.pickup(serverLevel, owner, result.getLocation(), this.pickupRadius);
+            }
         }
         if (this.trigger) {
             continueSpell(result.getLocation().add(0.0, 2.0, 0.0), this.getDeltaMovement());
@@ -151,6 +196,16 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         if (wandId != null) {
             tag.putUUID("wandId", wandId);
         }
+        tag.putBoolean("pickupEnabled", this.pickupEnabled);
+        tag.putFloat("pickupRadius", this.pickupRadius);
+        tag.putBoolean("digEnabled", this.digEnabled);
+        tag.putFloat("digRadius", this.digRadius);
+        tag.putInt("digLevel", this.digLevel);
+        tag.putBoolean("digDrops", this.digDrops);
+        tag.putBoolean("chainDigEnabled", this.chainDigEnabled);
+        tag.putFloat("chainDigRadius", this.chainDigRadius);
+        tag.putInt("chainDigLevel", this.chainDigLevel);
+        tag.putBoolean("chainDigDrops", this.chainDigDrops);
         if (!continuation.isEmpty()) {
             ListTag list = new ListTag();
             for (SpellNode.Connection c : continuation) {
@@ -172,6 +227,16 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         this.trigger = tag.getBoolean("trigger");
         this.maxTicks = tag.getInt("maxTicks");
         this.expireAt = tag.contains("expireAt") ? tag.getLong("expireAt") : -1;
+        this.pickupEnabled = tag.getBoolean("pickupEnabled");
+        this.pickupRadius = tag.contains("pickupRadius") ? tag.getFloat("pickupRadius") : 4.0f;
+        this.digEnabled = tag.getBoolean("digEnabled");
+        this.digRadius = tag.contains("digRadius") ? tag.getFloat("digRadius") : 2.0f;
+        this.digLevel = tag.contains("digLevel") ? tag.getInt("digLevel") : 1;
+        this.digDrops = !tag.contains("digDrops") || tag.getBoolean("digDrops");
+        this.chainDigEnabled = tag.getBoolean("chainDigEnabled");
+        this.chainDigRadius = tag.contains("chainDigRadius") ? tag.getFloat("chainDigRadius") : 8.0f;
+        this.chainDigLevel = tag.contains("chainDigLevel") ? tag.getInt("chainDigLevel") : 1;
+        this.chainDigDrops = !tag.contains("chainDigDrops") || tag.getBoolean("chainDigDrops");
         if (tag.hasUUID("ownerId")) {
             this.ownerId = tag.getUUID("ownerId");
         }

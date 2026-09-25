@@ -52,6 +52,7 @@ public class DelayedMagicMissileNode extends SpellNode {
 
             missile.setPos(ctx.getCurrentPosition());
             missile.setDeltaMovement(ctx.getCurrentVelocity().scale(speed));
+            missile.applyHarvestModifiers(ctx);
 
             continuation.clear();
             for (int i = 0; i < getOutputCount(); i++) {

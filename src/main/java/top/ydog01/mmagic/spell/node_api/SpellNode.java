@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import top.ydog01.mmagic.spell.casting.ExecutionResult;
+import top.ydog01.mmagic.spell.NodeParameter;
 import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.SpellNodeType;
 
@@ -33,9 +34,38 @@ public abstract class SpellNode {
         }
     }
     
-    public int paramInt(String key) { return params.getInt(key); }
-    public float paramFloat(String key) { return params.getFloat(key); }
-    public boolean paramBool(String key) { return params.getBoolean(key); }
+    public int paramInt(String key) {
+        if (params.contains(key)) {
+            return params.getInt(key);
+        }
+        NodeParameter spec = paramSpec(key);
+        return spec == null ? 0 : Math.round(spec.defaultValue());
+    }
+
+    public float paramFloat(String key) {
+        if (params.contains(key)) {
+            return params.getFloat(key);
+        }
+        NodeParameter spec = paramSpec(key);
+        return spec == null ? 0f : spec.defaultValue();
+    }
+
+    public boolean paramBool(String key) {
+        if (params.contains(key)) {
+            return params.getBoolean(key);
+        }
+        NodeParameter spec = paramSpec(key);
+        return spec != null && spec.defaultValue() >= 1f;
+    }
+
+    private NodeParameter paramSpec(String key) {
+        for (NodeParameter spec : type.parameters()) {
+            if (spec.key().equals(key)) {
+                return spec;
+            }
+        }
+        return null;
+    }
     public void setParam(String key, int value) { params.putInt(key, value); }
     public void setParam(String key, float value) { params.putFloat(key, value); }
     public void setParam(String key, boolean value) { params.putBoolean(key, value); }

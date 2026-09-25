@@ -25,8 +25,25 @@ public final class ModSpellNodes {
         System.out.println("[ModernMagic] 已注册: " + SpellRegistry.ids().size() + " 个节点");
 
         missile("magic_missile", 2, 4.0f, 1.5f, ModItems.SPELL_NODE_MAGIC_MISSILE, MagicMissileNode::new);
-        missile("delayed_magic_missile", 2, 2.0f, 1.2f, ModItems.SPELL_NODE_DELAYED_MAGIC_MISSILE, DelayedMagicMissileNode::new);
-        missile("trigger_missile", 2, 3.0f, 1.5f, ModItems.SPELL_NODE_TRIGGER_MISSILE, TriggerMissileNode::new);
+
+        // Delayed and trigger missiles store their downstream connection and
+        // release it later, so they must expose one output port.
+        SpellRegistry.register(id("delayed_magic_missile"), 1, 1, 2, 0,
+            DelayedMagicMissileNode::new, icon(ModItems.SPELL_NODE_DELAYED_MAGIC_MISSILE),
+            List.of(
+                new NodeParameter("damage", NodeParameter.Kind.FLOAT, 1f, 15f, 1f, 2.0f, "param.modern_magic.damage", 1f),
+                new NodeParameter("speed", NodeParameter.Kind.FLOAT, 0.5f, 3f, 0.1f, 1.2f, "param.modern_magic.speed", 0.5f),
+                new NodeParameter("flight_ticks", NodeParameter.Kind.INT, 5f, 200f, 5f, 40f, "param.modern_magic.flight_ticks", 0f)
+            ),
+            List.of("control", "trigger"));
+
+        SpellRegistry.register(id("trigger_missile"), 1, 1, 2, 0,
+            TriggerMissileNode::new, icon(ModItems.SPELL_NODE_TRIGGER_MISSILE),
+            List.of(
+                new NodeParameter("damage", NodeParameter.Kind.FLOAT, 1f, 15f, 1f, 3.0f, "param.modern_magic.damage", 1f),
+                new NodeParameter("speed", NodeParameter.Kind.FLOAT, 0.5f, 3f, 0.1f, 1.5f, "param.modern_magic.speed", 0.5f)
+            ),
+            List.of("control", "trigger"));
 
         SpellRegistry.register(id("explosion"), 1, 0, 5, 0,
             ExplosionNode::new, icon(ModItems.SPELL_NODE_EXPLOSION),
@@ -82,10 +99,6 @@ public final class ModSpellNodes {
             ),
             List.of("support", "buff"));
 
-        SpellRegistry.register(id("stabilize"), 1, 0, 3, 0,
-            EffectNodes.StabilizeNode::new, icon(ModItems.EXTRA_NODES.get("stabilize")),
-            List.of(new NodeParameter("duration", NodeParameter.Kind.INT, 20f, 1200f, 20f, 200f, "param.modern_magic.duration", 0.05f)),
-            List.of("support", "buff"));
 
         SpellRegistry.register(id("multi_cast"), 1, 2, 1, 0,
             ControlNodes.MultiCastNode::new, icon(ModItems.EXTRA_NODES.get("multi_cast")),
