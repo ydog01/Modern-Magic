@@ -100,7 +100,7 @@ public final class ModSpellNodes {
             List.of("support", "buff"));
 
 
-        SpellRegistry.register(id("multi_cast"), 1, 2, 1, 0,
+        SpellRegistry.register(id("multi_cast"), 1, 5, 1, 0,
             ControlNodes.MultiCastNode::new, icon(ModItems.EXTRA_NODES.get("multi_cast")),
             List.of(new NodeParameter("outputs", NodeParameter.Kind.INT, 2f, 5f, 1f, 2f, "param.modern_magic.outputs", 1f)),
             List.of("control", "flow"));

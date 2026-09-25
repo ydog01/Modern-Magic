@@ -12,7 +12,14 @@ public final class ControlNodes {
     private ControlNodes() {}
 
     public static class MultiCastNode extends ControlNode {
+        public static final int MAX_OUTPUTS = 5;
+
         public MultiCastNode() { super("multi_cast", SpellRegistry.get("multi_cast")); }
+
+        @Override
+        public int getOutputCount() {
+            return Math.max(1, Math.min(MAX_OUTPUTS, paramInt("outputs")));
+        }
         
         @Override 
         public ExecutionResult execute(SpellContext ctx) {
@@ -21,7 +28,7 @@ public final class ControlNodes {
         
         @Override 
         public ExecutionResult tick(SpellContext ctx) {
-            int count = paramInt("outputs");
+            int count = getOutputCount();
             List<Integer> ports = new ArrayList<>();
             for (int i = 0; i < count; i++) ports.add(i);
             return ExecutionResult.cloneTo(count, ports.stream().mapToInt(Integer::intValue).toArray());
