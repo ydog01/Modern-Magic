@@ -7,12 +7,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import top.ydog01.mmagic.ModernMagic;
-import top.ydog01.mmagic.entity.WizardEntity;
 import top.ydog01.mmagic.init.ModAttachments;
 import top.ydog01.mmagic.init.ModItems;
 import top.ydog01.mmagic.item.SpellNodeItem;
@@ -59,7 +57,10 @@ public final class Quests {
                     new QuestDef(id("spell_edit"), QuestDef.Kind.SPELL_EDIT,
                             new ItemStack(ModItems.EXTRA_NODES.get("echo").get()), 1, 30,
                             List.of(new ItemStack(ModItems.EXTRA_NODES.get("multi_cast").get()),
-                                    new ItemStack(ModItems.MAGIC_CRYSTAL.get(), 8)), null)
+                                    new ItemStack(ModItems.MAGIC_CRYSTAL.get(), 8)), null),
+                    new QuestDef(id("unknown_node"), QuestDef.Kind.UNKNOWN_NODE,
+                            new ItemStack(ModItems.UNKNOWN_NODE.get()), 1, 15,
+                            List.of(new ItemStack(ModItems.MAGIC_CRYSTAL.get(), 4)), null)
             );
         }
         return ALL;
@@ -81,26 +82,6 @@ public final class Quests {
     public static void openBook(ServerPlayer sp) {
         refreshPossession(sp);
         sendSync(sp, true);
-    }
-
-    public static void onWizardKill(ServerPlayer sp, boolean legendary) {
-        QuestProgress data = sp.getData(ModAttachments.QUEST_PROGRESS);
-        Map<ResourceLocation, QuestProgress.Entry> entries = new HashMap<>(data.entries());
-        boolean changed = false;
-        for (QuestDef def : all()) {
-            boolean matches = def.kind() == QuestDef.Kind.WIZARD_KILL
-                    || (def.kind() == QuestDef.Kind.LEGENDARY_KILL && legendary);
-            if (matches) {
-                QuestProgress.Entry old = entries.get(def.id());
-                int progress = Math.min((old == null ? 0 : old.progress()) + 1, def.target());
-                entries.put(def.id(), new QuestProgress.Entry(progress, old != null && old.claimed()));
-                changed = true;
-            }
-        }
-        if (changed) {
-            sp.setData(ModAttachments.QUEST_PROGRESS, new QuestProgress(entries));
-            sendSync(sp, false);
-        }
     }
 
     public static void onSpellEdited(ServerPlayer sp) {
@@ -148,6 +129,7 @@ public final class Quests {
             case NODES -> countDistinctNodes(sp);
             case MISSILE -> countItem(sp, ModItems.SPELL_NODE_MAGIC_MISSILE.get());
             case DUPLICATE -> countDuplicatedNodes(sp);
+            case UNKNOWN_NODE -> countItem(sp, ModItems.UNKNOWN_NODE.get());
             default -> 0;
         };
     }
@@ -218,16 +200,6 @@ public final class Quests {
         }
         PacketDistributor.sendToPlayer(sp,
                 new ModNetwork.QuestSyncPacket(sp.getData(ModAttachments.QUEST_PROGRESS), open));
-    }
-
-    @SubscribeEvent
-    public static void onLivingDeath(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof WizardEntity wizard)) {
-            return;
-        }
-        if (event.getSource().getEntity() instanceof ServerPlayer sp) {
-            onWizardKill(sp, wizard.isLegendary());
-        }
     }
 
     @SubscribeEvent

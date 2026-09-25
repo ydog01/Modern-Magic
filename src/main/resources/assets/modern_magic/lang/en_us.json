@@ -2,14 +2,9 @@
   "block.modern_magic.altar": "Altar",
   "item.modern_magic.wand": "Wand",
   "item.modern_magic.magic_crystal": "Magic Crystal",
-
   "entity.modern_magic.magic_missile": "Magic Missile",
-  "entity.modern_magic.wizard": "Wizard",
-  "entity.modern_magic.wizard.legendary": "Legendary Wizard",
-
   "itemGroup.modern_magic": "Modern Magic",
   "itemGroup.modern_magic.spell_nodes": "Spell Nodes",
-
   "item.modern_magic.spell_node_explosion": "Explosion Node",
   "item.modern_magic.spell_node_magic_missile": "Magic Missile Node",
   "item.modern_magic.spell_node_delayed_magic_missile": "Delayed Missile Node",
@@ -67,7 +62,6 @@
   "item.modern_magic.spell_node_echo": "Echo Node",
   "item.modern_magic.spell_node_offset_up": "Rise Node",
   "item.modern_magic.spell_node_offset_forward": "Forward Offset Node",
-
   "spell_node.modern_magic.start": "Start",
   "spell_node.modern_magic.start.desc": "The entry of every spell, casting starts here",
   "spell_node.modern_magic.explosion": "Explosion",
@@ -149,7 +143,7 @@
   "spell_node.modern_magic.echo": "Echo",
   "spell_node.modern_magic.echo.desc": "Runs downstream nodes several times (count adjustable)",
   "spell_node.modern_magic.offset_up": "Rise",
-    "spell_node.modern_magic.fire": "Fire Modifier",
+  "spell_node.modern_magic.fire": "Fire Modifier",
   "spell_node.modern_magic.fire.desc": "Adds fire to downstream projectiles",
   "spell_node.modern_magic.ice": "Ice Modifier",
   "spell_node.modern_magic.ice.desc": "Adds slowness to downstream projectiles",
@@ -187,14 +181,12 @@
   "spell_node.modern_magic.looting.desc": "Improves mob kill drops and adds fortune to digging (level adjustable)",
   "spell_node.modern_magic.loop": "Loop",
   "spell_node.modern_magic.loop.desc": "Connect downstream nodes back into an input to loop (input count adjustable)",
-
   "spell_node.modern_magic.condition": "Condition",
   "spell_node.modern_magic.condition.desc": "Routes by pass count: in-range goes to branch 1, otherwise branch 2 (else)",
   "spell_node.modern_magic.terminate": "Terminate",
   "spell_node.modern_magic.terminate.desc": "Ends the active branch that reaches this node",
   "spell_node.modern_magic.terminate_all": "Global Terminate",
   "spell_node.modern_magic.terminate_all.desc": "Ends every branch of this wand's current cast",
-
   "spell_node.modern_magic.rotate": "Rotate",
   "spell_node.modern_magic.rotate.desc": "Rotates the flight direction around the vertical axis (angle adjustable)",
   "spell_node.modern_magic.direction": "Direction",
@@ -205,10 +197,9 @@
   "spell_node.modern_magic.decelerate.desc": "Reduces downstream speed (multiplier adjustable)",
   "spell_node.modern_magic.wait": "Wait",
   "spell_node.modern_magic.wait.desc": "Waits for a set time before continuing the output",
-    "spell_node.modern_magic.offset_forward": "Forward",
+  "spell_node.modern_magic.offset_forward": "Forward",
   "spell_node.modern_magic.offset_forward.desc": "Moves the spell position forward along the aim (distance adjustable)",
   "spell_node.modern_magic.offset_up.desc": "Moves the spell position upward (distance adjustable)",
-
   "param.modern_magic.radius": "Radius",
   "param.modern_magic.damage": "Damage",
   "param.modern_magic.destroy_terrain": "Terrain",
@@ -233,7 +224,6 @@
   "param.modern_magic.pickup_radius": "Pickup radius",
   "param.modern_magic.chain_radius": "Chain radius",
   "param.modern_magic.drop": "Drop blocks",
-
   "category.modern_magic.attack": "Attack",
   "category.modern_magic.attack.projectile": "Projectiles",
   "category.modern_magic.attack.area": "Area",
@@ -247,7 +237,6 @@
   "category.modern_magic.support.heal": "Healing",
   "category.modern_magic.support.buff": "Buffs",
   "category.modern_magic.support.mobility": "Mobility",
-
   "screen.modern_magic.altar": "Altar",
   "screen.modern_magic.pray": "Pray",
   "screen.modern_magic.save": "Save",
@@ -288,24 +277,18 @@
   "screen.modern_magic.import_confirm_message": "Importing clears the current graph (nodes return to your inventory) and rebuilds it from the file. Continue?",
   "screen.modern_magic.clear_confirm_title": "Clear spell",
   "screen.modern_magic.clear_confirm_message": "Remove every placed node and return them to your inventory?",
-
   "tab.modern_magic.pray": "Pray",
   "tab.modern_magic.assemble": "Assemble",
-
   "attr.modern_magic.max_mana": "Max Mana",
   "attr.modern_magic.regen": "Mana/s",
   "attr.modern_magic.cooldown": "Cooldown",
-
   "hud.modern_magic.cooldown": "Cooldown: %ss",
-
   "tooltip.modern_magic.wand.max_mana": "Max Mana: %s",
   "tooltip.modern_magic.wand.regen": "Mana Regen: %s/s",
   "tooltip.modern_magic.wand.cooldown": "Cooldown: %ss",
   "tooltip.modern_magic.wand.mana": "Mana: %s",
-
   "item.modern_magic.quest_book": "Quest Book",
   "tooltip.modern_magic.quest_book": "Right-click to open the quest book",
-
   "quest.modern_magic.title": "Quest Book",
   "quest.modern_magic.altar.title": "Settling In",
   "quest.modern_magic.altar.desc": "The altar is your workbench for assembling spells and upgrading wands.",
@@ -316,7 +299,7 @@
   "quest.modern_magic.missile.title": "Craft Magic Missile",
   "quest.modern_magic.missile.desc": "Craft a basic Magic Missile node and make your wand actually fire.",
   "quest.modern_magic.nodes.title": "Node Scholar",
-  "quest.modern_magic.nodes.desc": "Monsters drop spell nodes. Collect 8 different node types.",
+  "quest.modern_magic.nodes.desc": "Snow golems always drop Unknown Nodes, which may contain spell nodes. Collect 8 different node types.",
   "quest.modern_magic.duplicate.title": "Node Duplication",
   "quest.modern_magic.duplicate.desc": "Place any node in the crafting grid center with a Magic Crystal on each of its four sides to duplicate it into two.",
   "quest.modern_magic.spell_edit.title": "Spell Craft",
@@ -326,7 +309,6 @@
   "quest.modern_magic.xp": "XP: %s",
   "quest.modern_magic.claim": "Claim",
   "quest.modern_magic.claimed": "Completed",
-
   "advancements.modern_magic.root.title": "Modern Magic",
   "advancements.modern_magic.root.desc": "Begin your journey into legendary magic",
   "advancements.modern_magic.quest_book.title": "Knowledge Seeker",
@@ -342,5 +324,9 @@
   "advancements.modern_magic.node_scholar.title": "Node Scholar",
   "advancements.modern_magic.node_scholar.desc": "Obtain a spell node",
   "advancements.modern_magic.duplicate.title": "Node Duplication",
-  "advancements.modern_magic.duplicate.desc": "Hold at least 2 of the same spell node"
+  "advancements.modern_magic.duplicate.desc": "Hold at least 2 of the same spell node",
+  "item.modern_magic.unknown_node": "Unknown Node",
+  "tooltip.modern_magic.unknown_node": "Right-click to open: 10% chance for a random spell node, 90% chance for a snowball.",
+  "quest.modern_magic.unknown_node.title": "Unknown Node",
+  "quest.modern_magic.unknown_node.desc": "Snow golems always drop an Unknown Node. Right-click it: 10% chance for a random spell node, 90% chance for a snowball."
 }

@@ -8,6 +8,7 @@ import top.ydog01.mmagic.ModernMagic;
 import top.ydog01.mmagic.item.MagicCrystalItem;
 import top.ydog01.mmagic.item.QuestBookItem;
 import top.ydog01.mmagic.item.SpellNodeItem;
+import top.ydog01.mmagic.item.UnknownNodeItem;
 import top.ydog01.mmagic.item.WandItem;
 
 import java.util.LinkedHashMap;
@@ -28,6 +29,9 @@ public final class ModItems {
 
     public static final DeferredItem<Item> QUEST_BOOK = ITEMS.register("quest_book",
             () -> new QuestBookItem(new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<Item> UNKNOWN_NODE = ITEMS.register("unknown_node",
+            () -> new UnknownNodeItem(new Item.Properties().stacksTo(99)));
 
     public static final DeferredItem<Item> SPELL_NODE_EXPLOSION = nodeItem("explosion");
     public static final DeferredItem<Item> SPELL_NODE_MAGIC_MISSILE = nodeItem("magic_missile");

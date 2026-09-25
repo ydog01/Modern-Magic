@@ -21,6 +21,7 @@ public final class ModCreativeTabs {
                 output.accept(ModItems.WAND.get());
                 output.accept(ModItems.MAGIC_CRYSTAL.get());
                 output.accept(ModItems.QUEST_BOOK.get());
+                output.accept(ModItems.UNKNOWN_NODE.get());
             })
             .build());
 

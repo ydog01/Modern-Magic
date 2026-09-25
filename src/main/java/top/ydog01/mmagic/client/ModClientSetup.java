@@ -23,6 +23,5 @@ public final class ModClientSetup {
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntityTypes.MAGIC_MISSILE.get(), ctx -> new ThrownItemRenderer<>(ctx));
-        event.registerEntityRenderer(ModEntityTypes.WIZARD.get(), WizardRenderer::new);
     }
 }

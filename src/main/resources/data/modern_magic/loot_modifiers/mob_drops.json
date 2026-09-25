@@ -1,8 +1,4 @@
 {
   "type": "modern_magic:mob_drops",
-  "conditions": [
-    {
-      "condition": "minecraft:killed_by_player"
-    }
-  ]
+  "conditions": []
 }
