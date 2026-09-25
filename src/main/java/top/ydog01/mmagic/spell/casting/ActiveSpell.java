@@ -2,8 +2,10 @@ package top.ydog01.mmagic.spell.casting;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.SpellGraph;
+import top.ydog01.mmagic.spell.SpellTrail;
 import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.node_implementations.ModifierNodes;
 
@@ -36,7 +38,7 @@ public class ActiveSpell {
     private ActiveSpell(ActiveSpellManager manager, SpellContext context, SpellGraph graph,
                         SpellNode currentNode, List<ActiveNode> activeNodes, UUID spellId) {
         this.manager = manager;
-        this.context = context.clone();
+        this.context = context.cloneWithGraph(graph);
         this.graph = graph;
         this.currentNode = currentNode;
         this.activeNodes = activeNodes.stream()
@@ -153,6 +155,8 @@ public class ActiveSpell {
             return;
         }
         
+        applyOutputs(modified);
+
         if (result.shouldClone()) {
             cloneAndBind(result, graph);
         } else {
@@ -178,6 +182,8 @@ public class ActiveSpell {
             return;
         }
         
+        applyOutputs(currentModifiedNode);
+
         if (result.shouldClone()) {
             cloneAndBind(result, graph);
         } else {
@@ -188,6 +194,26 @@ public class ActiveSpell {
         currentModifiedNode = null;
     }
     
+    /**
+     * Push this node's position / velocity / damage / speed outputs into the
+     * context before the spell walks to the next node. Without this, motion
+     * nodes (offset_up, offset_forward, rotate, direction, amplifier,
+     * accelerator, set_speed, decelerate) were dead code and every downstream
+     * node kept using the original cast position and velocity.
+     */
+    private void applyOutputs(SpellNode node) {
+        Vec3 pos = node.outputPosition(context.getCurrentPosition(), context);
+        if (pos != null) {
+            context.setCurrentPosition(pos);
+        }
+        Vec3 vel = node.outputVelocity(context.getCurrentVelocity(), context);
+        if (vel != null) {
+            context.setCurrentVelocity(vel);
+        }
+        context.setDamageMultiplier(node.outputDamageMult(context.getDamageMultiplier(), context));
+        context.setSpeedMultiplier(node.outputSpeedMult(context.getSpeedMultiplier(), context));
+    }
+
     private void advanceToOutputs(ExecutionResult result, SpellGraph graph) {
         if (currentNode == null) return;
         for (int port : result.getOutputPorts()) {
@@ -206,27 +232,27 @@ public class ActiveSpell {
     private void cloneAndBind(ExecutionResult result, SpellGraph graph) {
         if (currentNode == null) return;
 
-        // One clone per output port entry. Multi-cast supplies distinct ports,
-        // echo supplies the same port repeatedly.
+        // Each branch gets its own copy of the spell graph. Node execution state
+        // such as "already launched", wait ticks and executed flags must not be
+        // shared between branches produced by multi-cast / echo.
         for (int port : result.getOutputPorts()) {
-            SpellNode target = firstTarget(graph, port);
+            SpellNode.Connection connection = firstConnection(port);
+            if (connection == null) continue;
+
+            SpellGraph branchGraph = SpellGraph.fromTag(graph.toTag());
+            SpellNode target = branchGraph.getNode(connection.targetId);
             if (target == null) continue;
 
-            ActiveSpell clone = this.clone();
-            clone.currentNode = target;
-            clone.currentNodeExecuted = false;
-            clone.currentModifiedNode = null;
+            ActiveSpell clone = new ActiveSpell(manager, context, branchGraph, target,
+                    activeNodes, UUID.randomUUID());
             manager.addSpell(clone);
         }
         currentNode = null;
     }
 
-    private SpellNode firstTarget(SpellGraph graph, int port) {
+    private SpellNode.Connection firstConnection(int port) {
         for (SpellNode.Connection connection : currentNode.getConnections(port)) {
-            SpellNode target = graph.getNode(connection.targetId);
-            if (target != null) {
-                return target;
-            }
+            return connection;
         }
         return null;
     }
@@ -239,11 +265,13 @@ public class ActiveSpell {
         } else if (node instanceof ModifierNodes.ChainDigModifierNode chain) {
             context.enableChainDig(chain.paramFloat("radius"), chain.paramInt("level"), chain.paramBool("drop"));
         }
+
+        SpellTrail trail = node.trailEffect();
+        if (trail != null) {
+            context.addTrail(trail);
+        }
     }
 
-    public ActiveSpell clone() {
-        return new ActiveSpell(manager, context, graph, currentNode, activeNodes, UUID.randomUUID());
-    }
     
     public void addActiveNode(ActiveNode node) {
         queueAdd(node);
@@ -255,6 +283,12 @@ public class ActiveSpell {
         this.currentModifiedNode = null;
     }
     
+    /** Immediately stop this branch (e.g. when its wand is dropped). */
+    public void stop() {
+        this.stopped = true;
+        this.context.markTerminated();
+    }
+
     public boolean isStopped() { return stopped; }
     public List<ActiveNode> getActiveNodes() { return Collections.unmodifiableList(activeNodes); }
     public SpellContext getContext() { return context; }

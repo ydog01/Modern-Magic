@@ -202,7 +202,7 @@
   "spell_node.modern_magic.offset_up.desc": "把法术位置向上偏移(距离可调)",
   "param.modern_magic.radius": "范围",
   "param.modern_magic.damage": "伤害",
-  "param.modern_magic.destroy_terrain": "地形",
+  "param.modern_magic.destroy_terrain": "破坏地形",
   "param.modern_magic.flight_ticks": "飞行(刻)",
   "param.modern_magic.speed": "速度",
   "param.modern_magic.outputs": "口数",

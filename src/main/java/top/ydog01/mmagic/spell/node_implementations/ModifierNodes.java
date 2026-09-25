@@ -20,6 +20,7 @@ import top.ydog01.mmagic.spell.node_api.ProjectileNode;
 import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.SpellNodeType;
+import top.ydog01.mmagic.spell.SpellTrail;
 import top.ydog01.mmagic.spell.SpellRegistry;
 import java.util.*;
 
@@ -29,6 +30,20 @@ public final class ModifierNodes {
     public abstract static class ElementModifierNode extends ModifierNode {
         public ElementModifierNode(String id, SpellNodeType type) { 
             super(id, type); 
+        }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return switch (getId()) {
+                case FireModifierNode.ID -> SpellTrail.FLAME;
+                case IceModifierNode.ID -> SpellTrail.FROST;
+                case PoisonModifierNode.ID -> SpellTrail.POISON;
+                case WitherModifierNode.ID -> SpellTrail.WITHER;
+                case LevitateModifierNode.ID -> SpellTrail.LEVITATION;
+                case WaterModifierNode.ID -> SpellTrail.WATER;
+                case HealModifierNode.ID -> SpellTrail.HEAL;
+                default -> null;
+            };
         }
         
         @Override 
@@ -240,6 +255,12 @@ public final class ModifierNodes {
         public HomingModifierNode() { 
             super(ID, SpellRegistry.get(ID)); 
         }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return SpellTrail.ENCHANT;
+        }
+
         
         @Override 
         public SpellNode tryModify(SpellNode target, SpellContext ctx) {
@@ -323,6 +344,12 @@ public final class ModifierNodes {
         public BurstModifierNode() { 
             super(ID, SpellRegistry.get(ID)); 
         }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return SpellTrail.SOUL;
+        }
+
         
         @Override 
         public SpellNode tryModify(SpellNode target, SpellContext ctx) {
@@ -401,6 +428,12 @@ public final class ModifierNodes {
         public BounceModifierNode() { 
             super(ID, SpellRegistry.get(ID)); 
         }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return SpellTrail.CRIT;
+        }
+
         
         @Override 
         public SpellNode tryModify(SpellNode target, SpellContext ctx) {
@@ -502,6 +535,12 @@ public final class ModifierNodes {
         public PierceModifierNode() { 
             super(ID, SpellRegistry.get(ID)); 
         }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return SpellTrail.CRIT;
+        }
+
         
         @Override 
         public SpellNode tryModify(SpellNode target, SpellContext ctx) {
@@ -584,6 +623,12 @@ public final class ModifierNodes {
         public GravityModifierNode() { 
             super(ID, SpellRegistry.get(ID)); 
         }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return SpellTrail.CLOUD;
+        }
+
         
         @Override 
         public SpellNode tryModify(SpellNode target, SpellContext ctx) {
@@ -605,6 +650,12 @@ public final class ModifierNodes {
         public PierceWallModifierNode() { 
             super(ID, SpellRegistry.get(ID)); 
         }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return SpellTrail.SOUL;
+        }
+
         
         @Override 
         public SpellNode tryModify(SpellNode target, SpellContext ctx) {
@@ -672,6 +723,12 @@ public final class ModifierNodes {
         public PickupModifierNode() { 
             super(ID, SpellRegistry.get(ID)); 
         }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return SpellTrail.HAPPY;
+        }
+
         
         @Override 
         public SpellNode tryModify(SpellNode target, SpellContext ctx) {
@@ -762,6 +819,12 @@ public final class ModifierNodes {
         public DigModifierNode() { 
             super(ID, SpellRegistry.get(ID)); 
         }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return SpellTrail.CRIT;
+        }
+
         
         @Override 
         public SpellNode tryModify(SpellNode target, SpellContext ctx) {
@@ -868,6 +931,12 @@ public final class ModifierNodes {
         public ChainDigModifierNode() { 
             super(ID, SpellRegistry.get(ID)); 
         }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return SpellTrail.CRIT;
+        }
+
         
         @Override 
         public SpellNode tryModify(SpellNode target, SpellContext ctx) {
@@ -997,6 +1066,12 @@ public final class ModifierNodes {
         public SilkTouchModifierNode() { 
             super(ID, SpellRegistry.get(ID)); 
         }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return SpellTrail.ENCHANT;
+        }
+
         
         @Override 
         public SpellNode tryModify(SpellNode target, SpellContext ctx) { 
@@ -1015,6 +1090,12 @@ public final class ModifierNodes {
         public LootingModifierNode() { 
             super(ID, SpellRegistry.get(ID)); 
         }
+
+        @Override
+        public SpellTrail trailEffect() {
+            return SpellTrail.ENCHANT;
+        }
+
         
         @Override 
         public SpellNode tryModify(SpellNode target, SpellContext ctx) { 

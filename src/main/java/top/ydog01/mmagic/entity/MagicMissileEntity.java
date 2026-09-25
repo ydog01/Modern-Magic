@@ -2,6 +2,7 @@ package top.ydog01.mmagic.entity;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -16,8 +17,10 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.SpellHarvest;
+import top.ydog01.mmagic.spell.SpellTrail;
 import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.casting.SpellRunner;
+import top.ydog01.mmagic.util.WandData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,7 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
     private UUID ownerId = null;
     private UUID wandId = null;
     private List<SpellNode.Connection> continuation = List.of();
+    private final List<SpellTrail> trails = new ArrayList<>();
     private boolean pickupEnabled = false;
     private float pickupRadius = 4.0f;
     private boolean digEnabled = false;
@@ -85,6 +89,17 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         this.chainDigDrops = ctx.isChainDigDrops();
     }
 
+    public void setTrails(List<SpellTrail> trails) {
+        this.trails.clear();
+        this.trails.addAll(trails);
+    }
+
+    /** Remember which caster/wand this missile belongs to, so it can fizzle if the wand is lost. */
+    public void setSpellOwner(UUID ownerId, UUID wandId) {
+        this.ownerId = ownerId;
+        this.wandId = wandId;
+    }
+
     public void setDelayed(boolean delayed, int flightTicks, UUID ownerId, UUID wandId, List<SpellNode.Connection> continuation) {
         this.delayed = delayed;
         this.flightTicks = flightTicks;
@@ -107,20 +122,75 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         if (level().isClientSide()) {
             return;
         }
+        // onHitBlock / onHitEntity may already have removed the missile this tick.
+        if (this.isRemoved()) {
+            return;
+        }
+        if (!isWandStillPresent()) {
+            spawnBurstParticles();
+            this.discard();
+            return;
+        }
         long gameTime = level().getGameTime();
         if (this.expireAt < 0) {
             this.expireAt = gameTime + Math.max(1, this.delayed ? this.flightTicks : this.maxTicks - this.tickCount);
         }
         if (gameTime >= this.expireAt) {
+            spawnBurstParticles();
             this.discard();
             return;
         }
         if (this.delayed) {
             this.flightTicks--;
             if (this.flightTicks <= 0) {
+                spawnBurstParticles();
                 continueSpell(this.position(), this.getDeltaMovement());
                 this.discard();
+                return;
             }
+        }
+        spawnTrailParticles();
+    }
+
+    /** Returns false once the owning wand has left the caster's possession. */
+    private boolean isWandStillPresent() {
+        if (this.wandId == null) {
+            return true;
+        }
+        if (this.ownerId == null || !(level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+        if (!(serverLevel.getEntity(this.ownerId) instanceof LivingEntity owner)) {
+            return false;
+        }
+        return !WandData.findWandById(owner, this.wandId).isEmpty();
+    }
+
+    /** Emit the modifier trails between the previous and current tick position. */
+    private void spawnTrailParticles() {
+        if (trails.isEmpty() || !(level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        double dx = getX() - xo;
+        double dy = getY() - yo;
+        double dz = getZ() - zo;
+        double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        int steps = Math.max(1, (int) Math.ceil(distance));
+        for (SpellTrail trail : trails) {
+            for (int i = 0; i < steps; i++) {
+                double t = steps == 1 ? 0.0 : i / (double) (steps - 1);
+                trail.spawn(serverLevel, xo + dx * t, yo + dy * t, zo + dz * t);
+            }
+        }
+    }
+
+    /** Emit a larger burst of every trail, used on impact / expiry. */
+    private void spawnBurstParticles() {
+        if (trails.isEmpty() || !(level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        for (SpellTrail trail : trails) {
+            trail.burst(serverLevel, getX(), getY(), getZ());
         }
     }
 
@@ -141,7 +211,13 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         }
         if (this.trigger) {
             continueSpell(result.getLocation().add(0.0, 2.0, 0.0), this.getDeltaMovement());
+        } else if (this.delayed) {
+            // A delayed missile that hits early must still release its payload at the
+            // impact point, otherwise downstream nodes (delayed meteors, teleports, ...)
+            // are silently skipped.
+            continueSpell(result.getLocation(), this.getDeltaMovement());
         }
+        spawnBurstParticles();
         this.discard();
     }
 
@@ -166,7 +242,13 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         }
         if (this.trigger) {
             continueSpell(result.getLocation().add(0.0, 2.0, 0.0), this.getDeltaMovement());
+        } else if (this.delayed) {
+            // A delayed missile that hits early must still release its payload at the
+            // impact point, otherwise downstream nodes (delayed meteors, teleports, ...)
+            // are silently skipped.
+            continueSpell(result.getLocation(), this.getDeltaMovement());
         }
+        spawnBurstParticles();
         this.discard();
     }
 
@@ -178,7 +260,7 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
             return;
         }
 
-        SpellRunner.continueFrom(serverLevel, ownerId, wandId, continuation, at, vel);
+        SpellRunner.continueFrom(serverLevel, ownerId, wandId, continuation, at, vel, trails);
     }
 
     @Override
@@ -206,6 +288,13 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         tag.putFloat("chainDigRadius", this.chainDigRadius);
         tag.putInt("chainDigLevel", this.chainDigLevel);
         tag.putBoolean("chainDigDrops", this.chainDigDrops);
+        if (!trails.isEmpty()) {
+            ListTag trailList = new ListTag();
+            for (SpellTrail trail : trails) {
+                trailList.add(StringTag.valueOf(trail.name()));
+            }
+            tag.put("trails", trailList);
+        }
         if (!continuation.isEmpty()) {
             ListTag list = new ListTag();
             for (SpellNode.Connection c : continuation) {
@@ -237,6 +326,17 @@ public class MagicMissileEntity extends ThrowableItemProjectile {
         this.chainDigRadius = tag.contains("chainDigRadius") ? tag.getFloat("chainDigRadius") : 8.0f;
         this.chainDigLevel = tag.contains("chainDigLevel") ? tag.getInt("chainDigLevel") : 1;
         this.chainDigDrops = !tag.contains("chainDigDrops") || tag.getBoolean("chainDigDrops");
+        this.trails.clear();
+        if (tag.contains("trails", Tag.TAG_LIST)) {
+            ListTag trailList = tag.getList("trails", Tag.TAG_STRING);
+            for (int i = 0; i < trailList.size(); i++) {
+                try {
+                    this.trails.add(SpellTrail.valueOf(trailList.getString(i)));
+                } catch (IllegalArgumentException ignored) {
+                    // Ignore unknown trails from a different mod version.
+                }
+            }
+        }
         if (tag.hasUUID("ownerId")) {
             this.ownerId = tag.getUUID("ownerId");
         }

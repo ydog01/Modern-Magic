@@ -10,6 +10,7 @@ import top.ydog01.mmagic.spell.casting.ExecutionResult;
 import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.SpellRegistry;
+import top.ydog01.mmagic.spell.SpellTrail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +46,13 @@ public class TriggerMissileNode extends SpellNode {
                     ctx.caster(),
                     level);
 
-            float damage = paramFloat("damage");
-            float speed = paramFloat("speed");
+            float damage = paramFloat("damage") * ctx.getDamageMultiplier();
+            float speed = paramFloat("speed") * ctx.getSpeedMultiplier();
 
             missile.setDamage(damage);
             missile.applyHarvestModifiers(ctx);
+            missile.setTrails(ctx.getTrails());
+            missile.setSpellOwner(ctx.caster().getUUID(), ctx.wandId());
             missile.setPos(ctx.getCurrentPosition());
             missile.setDeltaMovement(ctx.getCurrentVelocity().scale(speed));
 
@@ -92,6 +95,11 @@ public class TriggerMissileNode extends SpellNode {
     @Override
     public ExecutionResult onUpdate(SpellContext ctx) {
         return ExecutionResult.empty();
+    }
+
+    @Override
+    public SpellTrail trailEffect() {
+        return SpellTrail.MAGIC;
     }
 
     @Override

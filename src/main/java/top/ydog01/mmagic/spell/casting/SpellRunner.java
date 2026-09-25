@@ -8,6 +8,7 @@ import net.minecraft.world.phys.Vec3;
 import top.ydog01.mmagic.item.WandItem;
 import top.ydog01.mmagic.network.ModNetwork;
 import top.ydog01.mmagic.spell.SpellGraph;
+import top.ydog01.mmagic.spell.SpellTrail;
 import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.util.WandData;
 
@@ -41,9 +42,9 @@ public final class SpellRunner {
     
     public static void continueFrom(ServerLevel level, UUID casterId, UUID wandId,
                                     List<SpellNode.Connection> connections,
-                                    Vec3 at, Vec3 vel) {
+                                    Vec3 at, Vec3 vel, List<SpellTrail> trails) {
         if (manager == null) return;
-        manager.continueFrom(level, casterId, wandId, connections, at, vel);
+        manager.continueFrom(level, casterId, wandId, connections, at, vel, trails);
     }
     
     public static ItemStack findWand(LivingEntity living) {

@@ -4,6 +4,7 @@ import net.minecraft.world.phys.Vec3;
 import top.ydog01.mmagic.spell.casting.ExecutionResult;
 import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.SpellRegistry;
+import top.ydog01.mmagic.spell.SpellTrail;
 import top.ydog01.mmagic.spell.node_api.ControlNode;
 
 public final class MotionNodes {
@@ -12,6 +13,8 @@ public final class MotionNodes {
     public static class AmplifierNode extends ControlNode {
         public static final String ID = "amplifier";
         public AmplifierNode() { super(ID, SpellRegistry.get(ID)); }
+
+        @Override public SpellTrail trailEffect() { return SpellTrail.CRIT; }
         
         @Override public ExecutionResult execute(SpellContext ctx) { return ExecutionResult.empty(); }
         
@@ -25,6 +28,8 @@ public final class MotionNodes {
     public static class AcceleratorNode extends ControlNode {
         public static final String ID = "accelerator";
         public AcceleratorNode() { super(ID, SpellRegistry.get(ID)); }
+
+        @Override public SpellTrail trailEffect() { return SpellTrail.ELECTRIC; }
         
         @Override public ExecutionResult execute(SpellContext ctx) { return ExecutionResult.empty(); }
         
@@ -38,6 +43,8 @@ public final class MotionNodes {
     public static class RotateNode extends ControlNode {
         public static final String ID = "rotate";
         public RotateNode() { super(ID, SpellRegistry.get(ID)); }
+
+        @Override public SpellTrail trailEffect() { return SpellTrail.ENCHANT; }
         
         @Override public ExecutionResult execute(SpellContext ctx) { return ExecutionResult.empty(); }
         
@@ -56,6 +63,8 @@ public final class MotionNodes {
     public static class DirectionNode extends ControlNode {
         public static final String ID = "direction";
         public DirectionNode() { super(ID, SpellRegistry.get(ID)); }
+
+        @Override public SpellTrail trailEffect() { return SpellTrail.ENCHANT; }
         
         @Override public ExecutionResult execute(SpellContext ctx) { return ExecutionResult.empty(); }
         
@@ -77,6 +86,8 @@ public final class MotionNodes {
     public static class SetSpeedNode extends ControlNode {
         public static final String ID = "set_speed";
         public SetSpeedNode() { super(ID, SpellRegistry.get(ID)); }
+
+        @Override public SpellTrail trailEffect() { return SpellTrail.ELECTRIC; }
         
         @Override public ExecutionResult execute(SpellContext ctx) { return ExecutionResult.empty(); }
         
@@ -90,6 +101,8 @@ public final class MotionNodes {
     public static class DecelerateNode extends ControlNode {
         public static final String ID = "decelerate";
         public DecelerateNode() { super(ID, SpellRegistry.get(ID)); }
+
+        @Override public SpellTrail trailEffect() { return SpellTrail.CLOUD; }
         
         @Override public ExecutionResult execute(SpellContext ctx) { return ExecutionResult.empty(); }
         
@@ -103,6 +116,8 @@ public final class MotionNodes {
     public static class OffsetUpNode extends ControlNode {
         public static final String ID = "offset_up";
         public OffsetUpNode() { super(ID, SpellRegistry.get(ID)); }
+
+        @Override public SpellTrail trailEffect() { return SpellTrail.PORTAL; }
         
         @Override public ExecutionResult execute(SpellContext ctx) { return ExecutionResult.empty(); }
         
@@ -116,6 +131,8 @@ public final class MotionNodes {
     public static class OffsetForwardNode extends ControlNode {
         public static final String ID = "offset_forward";
         public OffsetForwardNode() { super(ID, SpellRegistry.get(ID)); }
+
+        @Override public SpellTrail trailEffect() { return SpellTrail.PORTAL; }
         
         @Override public ExecutionResult execute(SpellContext ctx) { return ExecutionResult.empty(); }
         

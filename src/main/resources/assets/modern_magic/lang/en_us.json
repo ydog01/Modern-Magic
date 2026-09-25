@@ -202,7 +202,7 @@
   "spell_node.modern_magic.offset_up.desc": "Moves the spell position upward (distance adjustable)",
   "param.modern_magic.radius": "Radius",
   "param.modern_magic.damage": "Damage",
-  "param.modern_magic.destroy_terrain": "Terrain",
+  "param.modern_magic.destroy_terrain": "Destroy Terrain",
   "param.modern_magic.flight_ticks": "Flight (ticks)",
   "param.modern_magic.speed": "Speed",
   "param.modern_magic.outputs": "Ports",

@@ -8,6 +8,7 @@ import top.ydog01.mmagic.spell.casting.ExecutionResult;
 import top.ydog01.mmagic.spell.NodeParameter;
 import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.SpellNodeType;
+import top.ydog01.mmagic.spell.SpellTrail;
 
 import java.util.*;
 
@@ -225,5 +226,14 @@ public abstract class SpellNode {
     
     public float outputSpeedMult(float in, SpellContext ctx) {
         return in;
+    }
+
+    /**
+     * Optional particle trail contributed to downstream projectiles. Nodes that
+     * should make the spell look fancier return a {@link SpellTrail}; the default
+     * is no trail.
+     */
+    public SpellTrail trailEffect() {
+        return null;
     }
 }

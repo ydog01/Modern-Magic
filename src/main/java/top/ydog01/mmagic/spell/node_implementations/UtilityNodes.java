@@ -12,6 +12,7 @@ import top.ydog01.mmagic.spell.casting.ExecutionResult;
 import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.SpellRegistry;
+import top.ydog01.mmagic.spell.SpellTrail;
 
 public final class UtilityNodes {
     private UtilityNodes() {}
@@ -37,9 +38,13 @@ public final class UtilityNodes {
             if (!(ctx.level() instanceof ServerLevel level)) {
                 return ExecutionResult.empty();
             }
+            Vec3 pos = ctx.getCurrentPosition();
             LightningBolt bolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
-            bolt.setPos(ctx.getCurrentPosition());
+            bolt.setPos(pos);
             level.addFreshEntity(bolt);
+            for (SpellTrail trail : ctx.getTrails()) {
+                trail.burst(level, pos.x, pos.y, pos.z);
+            }
             executed = true;
             return ExecutionResult.continueTo(0);
         }

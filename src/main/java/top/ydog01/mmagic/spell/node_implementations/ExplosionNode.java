@@ -10,6 +10,7 @@ import top.ydog01.mmagic.spell.casting.ExecutionResult;
 import top.ydog01.mmagic.spell.SpellContext;
 import top.ydog01.mmagic.spell.node_api.SpellNode;
 import top.ydog01.mmagic.spell.SpellRegistry;
+import top.ydog01.mmagic.spell.SpellTrail;
 
 public class ExplosionNode extends SpellNode {
     public static final String ID = "explosion";
@@ -53,6 +54,12 @@ public class ExplosionNode extends SpellNode {
                 false,
                 interaction
         );
+
+        // Let any modifier trails gathered along the spell path flare up at the
+        // explosion centre as well.
+        for (SpellTrail trail : ctx.getTrails()) {
+            trail.burst(level, pos.x, pos.y, pos.z);
+        }
 
         executed = true;
         return ExecutionResult.continueTo(0);
