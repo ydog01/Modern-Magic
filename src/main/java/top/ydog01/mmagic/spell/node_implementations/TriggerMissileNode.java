@@ -62,10 +62,10 @@ public class TriggerMissileNode extends SpellNode {
 
             level.addFreshEntity(missile);
             launched = true;
-            return null;
+            return ExecutionResult.terminate();
         }
 
-        return null;
+        return ExecutionResult.terminate();
     }
 
     @Override

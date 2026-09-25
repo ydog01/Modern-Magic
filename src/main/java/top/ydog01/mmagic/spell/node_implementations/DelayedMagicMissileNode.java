@@ -62,14 +62,10 @@ public class DelayedMagicMissileNode extends SpellNode {
 
             level.addFreshEntity(missile);
             launched = true;
-            return null;
+            return ExecutionResult.terminate();
         }
 
-        if (missile != null && missile.isRemoved()) {
-            return ExecutionResult.continueTo(0);
-        }
-
-        return null;
+        return ExecutionResult.terminate();
     }
 
     @Override
