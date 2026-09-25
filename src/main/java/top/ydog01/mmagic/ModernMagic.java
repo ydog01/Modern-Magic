@@ -11,7 +11,6 @@ import top.ydog01.mmagic.init.ModItems;
 import top.ydog01.mmagic.init.ModLootModifiers;
 import top.ydog01.mmagic.init.ModMenuTypes;
 import top.ydog01.mmagic.init.ModSpellNodes;
-import top.ydog01.mmagic.init.ModStructures;
 import top.ydog01.mmagic.spell.casting.ActiveSpellManager;
 import top.ydog01.mmagic.spell.casting.SpellRunner;
 import top.ydog01.mmagic.spell.casting.SpellScheduler;
@@ -26,8 +25,6 @@ public class ModernMagic {
         ModCreativeTabs.TABS.register(modEventBus);
         ModMenuTypes.MENUS.register(modEventBus);
         ModEntityTypes.ENTITY_TYPES.register(modEventBus);
-        ModStructures.STRUCTURE_TYPES.register(modEventBus);
-        ModStructures.PIECE_TYPES.register(modEventBus);
         ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ModLootModifiers.GLOBAL_LOOT_MODIFIERS.register(modEventBus);
         ModSpellNodes.register();

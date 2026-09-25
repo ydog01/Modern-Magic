@@ -316,7 +316,7 @@
   "quest.modern_magic.missile.title": "合成魔法飞弹",
   "quest.modern_magic.missile.desc": "亲手合成基础魔法飞弹节点,让法杖真正开火。",
   "quest.modern_magic.nodes.title": "节点学者",
-  "quest.modern_magic.nodes.desc": "击杀怪物与法师获取节点,集齐 8 种不同的节点。",
+  "quest.modern_magic.nodes.desc": "击杀怪物获取法术节点,集齐 8 种不同的节点。",
   "quest.modern_magic.duplicate.title": "节点复制",
   "quest.modern_magic.duplicate.desc": "把任意节点放在合成台中央,上下左右各放 1 个魔力结晶,即可复制出 2 个节点。",
   "quest.modern_magic.spell_edit.title": "编辑术法",

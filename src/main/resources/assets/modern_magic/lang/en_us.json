@@ -316,7 +316,7 @@
   "quest.modern_magic.missile.title": "Craft Magic Missile",
   "quest.modern_magic.missile.desc": "Craft a basic Magic Missile node and make your wand actually fire.",
   "quest.modern_magic.nodes.title": "Node Scholar",
-  "quest.modern_magic.nodes.desc": "Monsters and wizards drop nodes. Collect 8 different nodes.",
+  "quest.modern_magic.nodes.desc": "Monsters drop spell nodes. Collect 8 different node types.",
   "quest.modern_magic.duplicate.title": "Node Duplication",
   "quest.modern_magic.duplicate.desc": "Place any node in the crafting grid center with a Magic Crystal on each of its four sides to duplicate it into two.",
   "quest.modern_magic.spell_edit.title": "Spell Craft",
