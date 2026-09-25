@@ -326,7 +326,9 @@
   "advancements.modern_magic.duplicate.title": "节点复制",
   "advancements.modern_magic.duplicate.desc": "拥有至少 2 个同种法术节点",
   "item.modern_magic.unknown_node": "未知的节点",
-  "tooltip.modern_magic.unknown_node": "右键打开：10% 概率获得随机法术节点，90% 概率获得雪球。",
+  "tooltip.modern_magic.unknown_node": "右键打开：20% 概率获得随机法术节点，80% 概率什么也没有。",
   "quest.modern_magic.unknown_node.title": "未知的节点",
-  "quest.modern_magic.unknown_node.desc": "雪傀儡 100% 掉落未知的节点。右键打开它，有 10% 概率获得随机法术节点，90% 概率获得雪球。"
+  "quest.modern_magic.unknown_node.desc": "雪傀儡 100% 掉落未知的节点。右键打开：20% 概率获得随机法术节点，80% 概率什么也没有。",
+  "message.modern_magic.unknown_node.reward": "获得法术节点：%s",
+  "message.modern_magic.unknown_node.nothing": "什么也没有..."
 }

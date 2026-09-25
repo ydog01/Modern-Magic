@@ -326,7 +326,9 @@
   "advancements.modern_magic.duplicate.title": "Node Duplication",
   "advancements.modern_magic.duplicate.desc": "Hold at least 2 of the same spell node",
   "item.modern_magic.unknown_node": "Unknown Node",
-  "tooltip.modern_magic.unknown_node": "Right-click to open: 10% chance for a random spell node, 90% chance for a snowball.",
+  "tooltip.modern_magic.unknown_node": "Right-click to open: 20% chance for a random spell node, 80% chance for nothing.",
   "quest.modern_magic.unknown_node.title": "Unknown Node",
-  "quest.modern_magic.unknown_node.desc": "Snow golems always drop an Unknown Node. Right-click it: 10% chance for a random spell node, 90% chance for a snowball."
+  "quest.modern_magic.unknown_node.desc": "Snow golems always drop an Unknown Node. Right-click it: 20% chance for a random spell node, 80% chance for nothing.",
+  "message.modern_magic.unknown_node.reward": "Obtained spell node: %s",
+  "message.modern_magic.unknown_node.nothing": "Nothing..."
 }

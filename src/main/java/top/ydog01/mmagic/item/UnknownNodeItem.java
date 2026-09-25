@@ -8,7 +8,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import top.ydog01.mmagic.spell.SpellNodeType;
@@ -29,23 +28,31 @@ public class UnknownNodeItem extends Item {
             stack.shrink(1);
 
             RandomSource random = level.random;
-            ItemStack reward;
-            if (random.nextFloat() < 0.10f) {
+            ItemStack reward = ItemStack.EMPTY;
+            Component message;
+
+            if (random.nextFloat() < 0.20f) {
                 List<ResourceLocation> ids = new ArrayList<>(SpellRegistry.ids());
                 ids.remove(SpellRegistry.START_ID);
                 if (!ids.isEmpty()) {
                     SpellNodeType type = SpellRegistry.get(ids.get(random.nextInt(ids.size())));
-                    reward = type == null ? new ItemStack(Items.SNOWBALL) : new ItemStack(type.icon().getItem());
+                    if (type != null) {
+                        reward = new ItemStack(type.icon().getItem());
+                        message = Component.translatable("message.modern_magic.unknown_node.reward", type.displayName());
+                    } else {
+                        message = Component.translatable("message.modern_magic.unknown_node.nothing");
+                    }
                 } else {
-                    reward = new ItemStack(Items.SNOWBALL);
+                    message = Component.translatable("message.modern_magic.unknown_node.nothing");
                 }
             } else {
-                reward = new ItemStack(Items.SNOWBALL);
+                message = Component.translatable("message.modern_magic.unknown_node.nothing");
             }
 
-            if (!player.getInventory().add(reward)) {
+            if (!reward.isEmpty() && !player.getInventory().add(reward)) {
                 player.drop(reward, false);
             }
+            player.displayClientMessage(message, true);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
